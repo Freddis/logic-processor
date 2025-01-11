@@ -7,6 +7,8 @@ export function SampleCanvas() {
   const svgRef = useRef<SVGSVGElement>(null);
   const [mouseOffsetX, setMouseOffsetX] = useState(0);
   const [mouseOffsetY, setMouseOffsetY] = useState(0);
+  const [dragElementInitialPageX, setDraggedElementInitialPageX] = useState(0);
+  const [dragElementInitialPageY, setDraggedElementInitialPageY] = useState(0);
   const [dragElementInitialX, setDraggedElementInitialX] = useState(0);
   const [dragElementInitialY, setDraggedElementInitialY] = useState(0);
   const [isDragging, setDragging] = useState(false);
@@ -24,23 +26,38 @@ export function SampleCanvas() {
   };
 
   const startDrag: MouseEventHandler = (e) => {
+    console.log('Start drag');
     e.preventDefault();
+    const element = circleRef.current?.getBoundingClientRect();
+    if (!element) {
+      throw new Error('Refernces to element and canvas not found');
+    }
     setDragging(true);
     setMouseOffsetX(e.pageX);
     setMouseOffsetY(e.pageY);
+    setDraggedElementInitialPageX(element.x);
+    setDraggedElementInitialPageY(element.y);
     setDraggedElementInitialX(circleX);
     setDraggedElementInitialY(circleY);
     processMouseMove(e);
   };
 
-  const stopDrag: MouseEventHandler = () => {
+  const stopDrag: MouseEventHandler = (e) => {
     console.log('Stop drag');
     setDragging(false);
-    unfocus();
+    const element = circleRef.current?.getBoundingClientRect();
+    if (!element) {
+      throw new Error('Refernces to element and canvas not found');
+    }
+    const inHorizontally = e.pageX > element.left && e.pageX < element.right;
+    const inVertically = e.pageY > element.top && e.pageY < element.bottom;
+    const inside = inHorizontally && inVertically;
+    if (!inside) {
+      unfocus();
+    }
   };
 
   const processMouseMove: MouseEventHandler = (e) => {
-    // console.log('mouse, x: ',e.pageX,', y: ',e.pageY)
     if (isDragging) {
       focus();
       const element = circleRef.current?.getBoundingClientRect();
@@ -48,22 +65,30 @@ export function SampleCanvas() {
       if (!element || !svg) {
         throw new Error('Refernces to element and canvas not found');
       }
-      const newX = dragElementInitialX + e.pageX - mouseOffsetX;
-      const newY = dragElementInitialY + e.pageY - mouseOffsetY;
-      const ltr = circleX < newX;
-      const utd = circleY < newY;
-      const rightMovementAllowed = ltr && element.right < svg.right;
-      const leftMovementAllowed = !ltr && element.left > svg.left;
-      const horzontalMovementAllowed = rightMovementAllowed || leftMovementAllowed;
-      const downMovementAllowed = utd && element.bottom < svg.bottom;
-      const upMovementAllowed = !utd && element.top > svg.top;
-      const verticalMovementAllowed = upMovementAllowed || downMovementAllowed;
-      if (horzontalMovementAllowed) {
-        setCircleX(newX);
+      const mouseDeltaX = e.pageX - mouseOffsetX;
+      const mouseDeltaY = e.pageY - mouseOffsetY;
+      const calculatedNewX = dragElementInitialX + mouseDeltaX;
+      const calculatedNewY = dragElementInitialY + mouseDeltaY;
+      const ltr = circleX < calculatedNewX;
+      const utd = circleY < calculatedNewY;
+      let newX = calculatedNewX;
+      if (ltr) {
+        const newRight = dragElementInitialPageX + mouseDeltaX + element.width;
+        newX = newRight >= svg.right ? svg.width - element.width / 2 : calculatedNewX;
+      } else {
+        const newLeft = dragElementInitialPageX + mouseDeltaX;
+        newX = newLeft <= svg.left ? 0 + element.width / 2 : calculatedNewX;
       }
-      if (verticalMovementAllowed) {
-        setCircleY(newY);
+      let newY = calculatedNewY;
+      if (utd) {
+        const newBottom = dragElementInitialPageY + mouseDeltaY + element.height;
+        newY = newBottom >= svg.bottom ? svg.height - element.height / 2 : calculatedNewY;
+      } else {
+        const newTop = dragElementInitialPageY + mouseDeltaY;
+        newY = newTop <= svg.top ? 0 + element.height / 2 : calculatedNewY;
       }
+      setCircleX(newX);
+      setCircleY(newY);
     }
   };
 
