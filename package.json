@@ -1,0 +1,27 @@
+{
+  "name": "logic-playground",
+  "version": "1.0.0",
+  "description": "",
+  "type": "module",
+  "main": "main.ts",
+  "scripts": {
+    "start:dev": "vinxi dev",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Alex Sarychev",
+  "license": "ISC",
+  "dependencies": {
+    "@tanstack/react-router": "^1.95.3",
+    "@tanstack/start": "^1.95.3",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "vinxi": "^0.5.1"
+  },
+  "devDependencies": {
+    "@tanstack/router-devtools": "^1.95.3",
+    "@tanstack/router-plugin": "^1.95.3",
+    "@types/react": "^19.0.4",
+    "@types/react-dom": "^19.0.2",
+    "tsx": "^4.19.2"
+  }
+}

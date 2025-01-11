@@ -1,0 +1,29 @@
+{
+    "compilerOptions": {
+      "jsx": "react-jsx",
+      "outDir": "build",
+      "module": "ESNext",
+      "moduleResolution": "Bundler",
+      "target": "ESNext",
+      "esModuleInterop": true,
+      "sourceMap": true,
+      "allowJs": false,
+      "strictNullChecks": true,
+      "strict": true,
+      "strictPropertyInitialization": true,
+      "noImplicitReturns": true,
+      "isolatedModules": false,
+      "noImplicitAny": true,
+      "noImplicitThis": true,
+      "noImplicitOverride": true,
+      "resolveJsonModule": true,
+      "noUncheckedIndexedAccess": true,
+      "noErrorTruncation": true,
+      "declaration": true,
+      "emitDeclarationOnly": false,
+      "allowImportingTsExtensions": false,
+    },
+    "exclude": [
+      "build"
+    ],
+  }
