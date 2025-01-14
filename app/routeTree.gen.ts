@@ -11,9 +11,16 @@
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
+import { Route as ConstructorImport } from './routes/constructor'
 import { Route as IndexImport } from './routes/index'
 
 // Create/Update Routes
+
+const ConstructorRoute = ConstructorImport.update({
+  id: '/constructor',
+  path: '/constructor',
+  getParentRoute: () => rootRoute,
+} as any)
 
 const IndexRoute = IndexImport.update({
   id: '/',
@@ -32,6 +39,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexImport
       parentRoute: typeof rootRoute
     }
+    '/constructor': {
+      id: '/constructor'
+      path: '/constructor'
+      fullPath: '/constructor'
+      preLoaderRoute: typeof ConstructorImport
+      parentRoute: typeof rootRoute
+    }
   }
 }
 
@@ -39,32 +53,37 @@ declare module '@tanstack/react-router' {
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/constructor': typeof ConstructorRoute
 }
 
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/constructor': typeof ConstructorRoute
 }
 
 export interface FileRoutesById {
   __root__: typeof rootRoute
   '/': typeof IndexRoute
+  '/constructor': typeof ConstructorRoute
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths: '/' | '/constructor'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to: '/' | '/constructor'
+  id: '__root__' | '/' | '/constructor'
   fileRoutesById: FileRoutesById
 }
 
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  ConstructorRoute: typeof ConstructorRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  ConstructorRoute: ConstructorRoute,
 }
 
 export const routeTree = rootRoute
@@ -77,11 +96,15 @@ export const routeTree = rootRoute
     "__root__": {
       "filePath": "__root.tsx",
       "children": [
-        "/"
+        "/",
+        "/constructor"
       ]
     },
     "/": {
       "filePath": "index.tsx"
+    },
+    "/constructor": {
+      "filePath": "constructor.tsx"
     }
   }
 }

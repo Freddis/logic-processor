@@ -3,15 +3,15 @@ import {ReactNode} from '@tanstack/react-router';
 import {MouseCatcher} from '../../utls/MouseCatcher/MouseCatcher';
 import {CanvasContext} from './CanvasContext';
 
-export function Canvas(props: {scale?: number, children: ReactNode[] | ReactNode}) {
+export function Canvas(props: {scale?: number, width: number, height: number, children: ReactNode[] | ReactNode}) {
   const debug = false;
   const scale = props.scale ?? 1;
 
   const catcher = new MouseCatcher();
   const [minX, setMinX] = useState(0);
   const [minY, setMinY] = useState(0);
-  const initialWidth = 800;
-  const initialHeight = 600;
+  const initialWidth = props.width;
+  const initialHeight = props.height;
 
   const scaledWidth = (initialWidth) / scale;
   const scaledHeight = (initialHeight) / scale;
@@ -76,7 +76,7 @@ export function Canvas(props: {scale?: number, children: ReactNode[] | ReactNode
     onMouseDown={startScrolling}
     viewBox={`${minX},${minY},${scaledWidth},${scaledHeight}`}
     >
-      <rect x={minX} y={minY} width="100%" height="100%" fill="#eeeeee" />
+      <rect x={minX} y={minY} width="100%" height="100%" fill="#222222" />
       {props.children}
     </svg>
     </CanvasContext.Provider>;

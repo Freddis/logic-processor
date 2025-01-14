@@ -1,10 +1,6 @@
-import {
-    Outlet,
-    ScrollRestoration,
-    createRootRoute,
-  } from '@tanstack/react-router';
-import {Meta, Scripts} from '@tanstack/start';
-import type {ReactNode} from 'react';
+import {createRootRoute} from '@tanstack/react-router';
+import {Layout} from '../pages/Layout';
+import {NotFoundPage} from '../pages/NotFoundPage';
 
 export const Route = createRootRoute({
   head: () => ({
@@ -17,32 +13,12 @@ export const Route = createRootRoute({
         content: 'width=device-width, initial-scale=1',
       },
       {
-        title: 'TanStack Start Starter',
+        title: 'Logic Constructor',
       },
     ],
   }),
-  component: RootComponent,
+  component: Layout,
+  notFoundComponent: NotFoundPage,
 });
 
-function RootComponent() {
-  return (
-      <RootDocument>
-        <Outlet />
-      </RootDocument>
-  );
-}
 
-function RootDocument({children}: Readonly<{ children: ReactNode }>) {
-  return (
-      <html>
-        <head>
-          <Meta />
-        </head>
-        <body>
-          {children}
-          <ScrollRestoration />
-          <Scripts />
-        </body>
-      </html>
-  );
-}
