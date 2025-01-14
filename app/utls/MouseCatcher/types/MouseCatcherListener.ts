@@ -1,5 +1,3 @@
-export type MouseCatcherListener = (e: {
-  pageX: number,
-  pageY: number,
-  canvas: SVGSVGElement
-})=> void
+import {SimpleMouseEvent} from './SimpleMouseEvent';
+
+export type MouseCatcherListener = (e: SimpleMouseEvent)=> void

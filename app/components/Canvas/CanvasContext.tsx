@@ -5,4 +5,6 @@ export const CanvasContext = createContext({
   scale: 1,
   debug: false,
   mouse: new MouseCatcher(),
+  offsetX: 0,
+  offsetY: 0,
 });

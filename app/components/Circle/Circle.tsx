@@ -1,5 +1,4 @@
 import {JSX, useState, useContext} from 'react';
-import {MouseCatcher} from '../../utls/MouseCatcher/MouseCatcher';
 import {CanvasContext} from '../Canvas/CanvasContext';
 import {Draggable} from '../Draggable/Draggable';
 
@@ -14,8 +13,7 @@ export function Circle(props: {
   label: string,
   x: number,
   y: number,
-  key: number,
-  mouseCatcher: MouseCatcher,
+  id: string,
 }) {
   const context = useContext(CanvasContext);
   const [x, setX] = useState(props.x * context.scale);
@@ -40,7 +38,7 @@ export function Circle(props: {
   return (
     <g fill="green">
       <Draggable
-      id={props.key}
+      id={props.id}
       x={x}
       y={y}
       width={width}

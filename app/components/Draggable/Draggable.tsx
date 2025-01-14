@@ -1,8 +1,19 @@
-import {FC, MouseEventHandler, useContext, useRef, useState} from 'react';
+import {createContext, FC, MouseEventHandler, useContext, useRef, useState} from 'react';
 import {DraggableProps} from './types/DraggableProps';
 import {CanvasContext} from '../Canvas/CanvasContext';
+import {MouseCatcherListener} from '../../utls/MouseCatcher/types/MouseCatcherListener';
+
+const DraggableContext = createContext({
+  xOffset: 0,
+  yOffset: 0,
+});
 
 export const Draggable: FC<DraggableProps> = (props) => {
+  if (props.isHidden) {
+    return null;
+  }
+  const dContext = useContext(DraggableContext);
+  const context = useContext(CanvasContext);
   const elementColor = 'yellow';
   const focusColor = 'red';
   const elementRef = useRef<SVGRectElement>(null);
@@ -13,17 +24,27 @@ export const Draggable: FC<DraggableProps> = (props) => {
   const [dragElementInitialX, setDraggedElementInitialX] = useState(0);
   const [dragElementInitialY, setDraggedElementInitialY] = useState(0);
   const [isDragging, setDragging] = useState(false);
-  const [elementX, setElementX] = useState(props.x);
-  const [elementY, setElementY] = useState(props.y);
+  const elementX = props.x;
+  const elementY = props.y;
   const [color, setColor] = useState(elementColor);
   const [cursor, setCursor] = useState('default');
-  const context = useContext(CanvasContext);
+  const [xOffset, setOffsetX] = useState(dragElementInitialX);
+  const [yOffset, setOffsetY] = useState(dragElementInitialY);
+  context.mouse.onMouseMove(props.id, (e) => processMouseMove(e));
+  context.mouse.onMouseUp(props.id, (e) => stopDrag(e));
+
   const focus = () => {
     setColor(focusColor);
     setCursor('pointer');
     if (props.onFocus) {
       props.onFocus();
     }
+  };
+  const unfocusHandler = () => {
+    if (isDragging) {
+      return;
+    }
+    unfocus();
   };
   const unfocus = () => {
     setColor(elementColor);
@@ -32,19 +53,21 @@ export const Draggable: FC<DraggableProps> = (props) => {
       props.onFocusOut();
     }
   };
-  context.mouse.onMouseMove(props.id, (e) => processMouseMove(e));
   const processStartDrag = (e: {pageX: number, pageY:number, preventDefault: () => void}) => {
+    if (!context.mouse.lock(props.id)) {
+      return;
+    }
     console.log('Start drag');
     e.preventDefault();
-    const element = elementRef.current?.getBoundingClientRect();
-    if (!element) {
+    const htmlCoords = elementRef.current?.getBoundingClientRect();
+    if (!htmlCoords) {
       throw new Error('Refernce to element not found');
     }
     setDragging(true);
     setMouseOffsetX(e.pageX);
     setMouseOffsetY(e.pageY);
-    setDraggedElementInitialPageX(element.x);
-    setDraggedElementInitialPageY(element.y);
+    setDraggedElementInitialPageX(htmlCoords.x);
+    setDraggedElementInitialPageY(htmlCoords.y);
     setDraggedElementInitialX(elementX);
     setDraggedElementInitialY(elementY);
   };
@@ -53,8 +76,16 @@ export const Draggable: FC<DraggableProps> = (props) => {
     processStartDrag(e);
   };
 
-  const stopDrag: MouseEventHandler = (e) => {
+  const stopDrag: MouseCatcherListener = (e) => {
+    if (isDragging && props.onClick) {
+      const mouseDeltaX = e.pageX - mouseOffsetX;
+      const mouseDeltaY = e.pageY - mouseOffsetY;
+      if (mouseDeltaX === 0 && mouseDeltaY === 0) {
+        props.onClick(e);
+      }
+    }
     console.log('Stop drag');
+    context.mouse.unlock(props.id);
     setDragging(false);
     const element = elementRef.current?.getBoundingClientRect();
     if (!element) {
@@ -74,50 +105,53 @@ export const Draggable: FC<DraggableProps> = (props) => {
       if (!element || !svg) {
         throw new Error('Refernces to element and canvas not found');
       }
-      const mouseDeltaX = (e.pageX - mouseOffsetX) / context.scale;
-      const mouseDeltaY = (e.pageY - mouseOffsetY) / context.scale;
+      const scale = context.scale;
+      const mouseDeltaX = (e.pageX - mouseOffsetX) / scale;
+      const mouseDeltaY = (e.pageY - mouseOffsetY) / scale;
       const calculatedNewX = dragElementInitialX + mouseDeltaX;
       const calculatedNewY = dragElementInitialY + mouseDeltaY;
       const ltr = elementX < calculatedNewX;
       const utd = elementY < calculatedNewY;
       let newX = calculatedNewX;
       if (ltr) {
-        const newRight = dragElementInitialPageX / context.scale + mouseDeltaX + element.width / context.scale;
-        newX = newRight >= svg.right / context.scale ? (svg.width - element.width) / context.scale : calculatedNewX;
+        const newRight = dragElementInitialPageX / scale + mouseDeltaX + element.width / scale;
+        newX = newRight >= svg.right / scale ? (svg.width - element.width + context.offsetX) / scale : calculatedNewX;
       } else {
-        const newLeft = dragElementInitialPageX / context.scale + mouseDeltaX;
-        newX = newLeft <= svg.left / context.scale ? 0 : calculatedNewX;
+        const newLeft = dragElementInitialPageX / scale + mouseDeltaX;
+        newX = newLeft <= svg.left / scale ? 0 + context.offsetX : calculatedNewX;
       }
       let newY = calculatedNewY;
       if (utd) {
-        const newBottom = dragElementInitialPageY / context.scale + mouseDeltaY + element.height / context.scale;
-        newY = newBottom >= svg.bottom / context.scale ? (svg.height - element.height) / context.scale : calculatedNewY;
+        const newBottom = dragElementInitialPageY / scale + mouseDeltaY + element.height / scale;
+        newY = newBottom >= svg.bottom / scale ? (svg.height - element.height + context.offsetY) / scale : calculatedNewY;
       } else {
-        const newTop = dragElementInitialPageY / context.scale + mouseDeltaY;
-        newY = newTop <= svg.top / context.scale ? 0 : calculatedNewY;
+        const newTop = dragElementInitialPageY / scale + mouseDeltaY;
+        newY = newTop <= svg.top / scale ? 0 + context.offsetY : calculatedNewY;
       }
-      setElementX(newX);
-      setElementY(newY);
+      setOffsetX(newX - dragElementInitialX);
+      setOffsetY(newY - dragElementInitialY);
       if (props.onDrag) {
         props.onDrag(newX, newY);
       }
     }
   };
 
-  return [
-    props.children,
-    <rect
+  console.log(props.id, dContext, xOffset, yOffset, dragElementInitialX, dragElementInitialY, props.x, props.y);
+  return <DraggableContext.Provider value={{xOffset, yOffset}}>
+      {props.children.filter((x) => x.type.name !== 'Draggable')},
+      <rect
+      key="key"
       ref={elementRef}
-      onMouseUp={stopDrag}
       onMouseDown={startDrag}
       cursor={cursor}
       onMouseOver={focus}
-      onMouseLeave={unfocus}
-      x={elementX}
-      y={elementY}
-    fill={color}
-    opacity={context.debug ? 0.4 : 0}
-    width={props.width}
-    height={props.height}></rect>,
-  ];
+      onMouseLeave={unfocusHandler}
+      x={props.x}
+      y={props.y}
+      fill={color}
+      opacity={context.debug ? 0.4 : 0}
+      width={props.width}
+      height={props.height}/>
+      {props.children.filter((x) => x.type.name === 'Draggable')},
+  </DraggableContext.Provider>;
 };

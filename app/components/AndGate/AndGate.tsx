@@ -1,7 +1,8 @@
-import {MouseEventHandler, useState} from 'react';
+import {useState} from 'react';
 import {Draggable} from '../Draggable/Draggable';
+import {MouseCatcherListener} from '../../utls/MouseCatcher/types/MouseCatcherListener';
 
-export function AndGate(props: {x: number, y: number, key: number}) {
+export function AndGate(props: {x: number, y: number, id: string}) {
   const [x, setX] = useState(props.x);
   const [y, setY] = useState(props.y);
   const height = 100;
@@ -29,9 +30,9 @@ export function AndGate(props: {x: number, y: number, key: number}) {
   const unfocus = () => {
     setFocus(false);
   };
-  const activate: MouseEventHandler = (e) => {
+  const activate: MouseCatcherListener = (e) => {
     e.preventDefault();
-    setActive(true);
+    setActive(!active);
   };
   const onDrag = (x: number, y: number) => {
     setX(x);
@@ -44,8 +45,17 @@ export function AndGate(props: {x: number, y: number, key: number}) {
     setOutputY(y + connectorRadius);
   };
   return <>
-  <Draggable x={x} y={y} width={width} height={height} onDrag={onDrag} onFocus={focus} id={props.key} >
-    <g onClick={activate} onMouseOver={focus} onMouseOut={unfocus} cursor="pointer">
+  <Draggable
+    id={props.id}
+    x={x}
+    y={y}
+    width={width}
+    height={height}
+    onClick={activate}
+    onDrag={onDrag}
+    onFocusOut={unfocus}
+    onFocus={focus}
+  >
       <rect
         width={width} height={height} rx={10} ry={10} x={x} y={y} fill="white" strokeWidth={4}
         stroke={outlineColor}
@@ -58,10 +68,7 @@ export function AndGate(props: {x: number, y: number, key: number}) {
         fill={outlineColor}
         textAnchor="middle"
       >AND</text>
-      </g>
-    </Draggable>
-    {showControls && [
-      <circle
+      {!showControls ? <></> : <circle
           onMouseOver={setInput1Focus.bind(null, true)}
           onMouseOut={setInput1Focus.bind(null, false)}
           onMouseDown={(e) => e.stopPropagation()}
@@ -70,8 +77,8 @@ export function AndGate(props: {x: number, y: number, key: number}) {
           cy={y + 30}
           r={connectorRadius}
           fill={input1Color}
-        />,
-      <circle
+      /> }
+      {!showControls ? <></> : <circle
           onMouseOver={setInput2Focus.bind(null, true)}
           onMouseOut={setInput2Focus.bind(null, false)}
           cursor={'pointer'}
@@ -79,16 +86,17 @@ export function AndGate(props: {x: number, y: number, key: number}) {
           cy={y + height - 30}
           r={connectorRadius}
           fill={input2Color}
-        />,
+      />}
       <Draggable
+        isHidden={!showControls}
         x={outputX - connectorRadius}
         y={outputY - connectorRadius}
         width={connectorRadius * 2}
         height={connectorRadius * 2}
         onDrag={onOutputDrag}
-        onFocus={setOutputFocus.bind(null, true)}
+        onFocus={() => {focus(); setOutputFocus(true);}}
         onFocusOut={setOutputFocus.bind(null, false)}
-        id={props.key + 1}
+        id={props.id + 'output'}
       >
         <circle
             onMouseOver={setOutputFocus.bind(null, true)}
@@ -99,7 +107,8 @@ export function AndGate(props: {x: number, y: number, key: number}) {
             r={connectorRadius}
             fill={outputColor}
           />
-      </Draggable>,
-    ]}
+          <></>
+      </Draggable>
+    </Draggable>
   </>;
 }
