@@ -19,8 +19,8 @@ export const Draggable: FC<DraggableProps> = (props) => {
   const elementRef = useRef<SVGRectElement>(null);
   const [mouseOffsetX, setMouseOffsetX] = useState(0);
   const [mouseOffsetY, setMouseOffsetY] = useState(0);
-  const [dragElementInitialPageX, setDraggedElementInitialPageX] = useState(0);
-  const [dragElementInitialPageY, setDraggedElementInitialPageY] = useState(0);
+  // const [dragElementInitialPageX, setDraggedElementInitialPageX] = useState(0);
+  // const [dragElementInitialPageY, setDraggedElementInitialPageY] = useState(0);
   const [dragElementInitialX, setDraggedElementInitialX] = useState(0);
   const [dragElementInitialY, setDraggedElementInitialY] = useState(0);
   const [isDragging, setDragging] = useState(false);
@@ -55,6 +55,7 @@ export const Draggable: FC<DraggableProps> = (props) => {
   };
   const processStartDrag = (e: {pageX: number, pageY:number, preventDefault: () => void}) => {
     if (!context.mouse.lock(props.id)) {
+      console.log("Couldn't lock element");
       return;
     }
     console.log('Start drag');
@@ -66,8 +67,8 @@ export const Draggable: FC<DraggableProps> = (props) => {
     setDragging(true);
     setMouseOffsetX(e.pageX);
     setMouseOffsetY(e.pageY);
-    setDraggedElementInitialPageX(htmlCoords.x);
-    setDraggedElementInitialPageY(htmlCoords.y);
+    // setDraggedElementInitialPageX(htmlCoords.x);
+    // setDraggedElementInitialPageY(htmlCoords.y);
     setDraggedElementInitialX(elementX);
     setDraggedElementInitialY(elementY);
   };
@@ -77,7 +78,10 @@ export const Draggable: FC<DraggableProps> = (props) => {
   };
 
   const stopDrag: MouseCatcherListener = (e) => {
-    if (isDragging && props.onClick) {
+    if (!isDragging) {
+      return;
+    }
+    if (props.onClick) {
       const mouseDeltaX = e.pageX - mouseOffsetX;
       const mouseDeltaY = e.pageY - mouseOffsetY;
       if (mouseDeltaX === 0 && mouseDeltaY === 0) {
@@ -110,24 +114,25 @@ export const Draggable: FC<DraggableProps> = (props) => {
       const mouseDeltaY = (e.pageY - mouseOffsetY) / scale;
       const calculatedNewX = dragElementInitialX + mouseDeltaX;
       const calculatedNewY = dragElementInitialY + mouseDeltaY;
-      const ltr = elementX < calculatedNewX;
-      const utd = elementY < calculatedNewY;
-      let newX = calculatedNewX;
-      if (ltr) {
-        const newRight = dragElementInitialPageX / scale + mouseDeltaX + element.width / scale;
-        newX = newRight >= svg.right / scale ? (svg.width - element.width + context.offsetX) / scale : calculatedNewX;
-      } else {
-        const newLeft = dragElementInitialPageX / scale + mouseDeltaX;
-        newX = newLeft <= svg.left / scale ? 0 + context.offsetX : calculatedNewX;
-      }
-      let newY = calculatedNewY;
-      if (utd) {
-        const newBottom = dragElementInitialPageY / scale + mouseDeltaY + element.height / scale;
-        newY = newBottom >= svg.bottom / scale ? (svg.height - element.height + context.offsetY) / scale : calculatedNewY;
-      } else {
-        const newTop = dragElementInitialPageY / scale + mouseDeltaY;
-        newY = newTop <= svg.top / scale ? 0 + context.offsetY : calculatedNewY;
-      }
+      const newX = calculatedNewX;
+      const newY = calculatedNewY;
+      // todo: decide if we need this calculation
+      // const ltr = elementX < calculatedNewX;
+      // const utd = elementY < calculatedNewY;
+      // if (ltr) {
+      //   const newRight = dragElementInitialPageX / scale + mouseDeltaX + element.width / scale;
+      //   newX = newRight >= svg.right / scale ? (svg.width - element.width + context.offsetX) / scale : calculatedNewX;
+      // } else {
+      //   const newLeft = dragElementInitialPageX / scale + mouseDeltaX;
+      //   newX = newLeft <= svg.left / scale ? 0 + context.offsetX : calculatedNewX;
+      // }
+      // if (utd) {
+      //   const newBottom = dragElementInitialPageY / scale + mouseDeltaY + element.height / scale;
+      //   newY = newBottom >= svg.bottom / scale ? (svg.height - element.height + context.offsetY) / scale : calculatedNewY;
+      // } else {
+      //   const newTop = dragElementInitialPageY / scale + mouseDeltaY;
+      //   newY = newTop <= svg.top / scale ? 0 + context.offsetY : calculatedNewY;
+      // }
       setOffsetX(newX - dragElementInitialX);
       setOffsetY(newY - dragElementInitialY);
       if (props.onDrag) {

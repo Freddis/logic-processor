@@ -1,4 +1,4 @@
-import {createRef, MouseEventHandler, useEffect, useState} from 'react';
+import {createRef, MouseEventHandler, useEffect, useMemo, useState} from 'react';
 import {ReactNode} from '@tanstack/react-router';
 import {MouseCatcher} from '../../utls/MouseCatcher/MouseCatcher';
 import {CanvasContext} from './CanvasContext';
@@ -6,8 +6,12 @@ import {CanvasContext} from './CanvasContext';
 export function Canvas(props: {scale?: number, width: number, height: number, children: ReactNode[] | ReactNode}) {
   const debug = false;
   const scale = props.scale ?? 1;
-
-  const catcher = new MouseCatcher();
+  const children = useMemo(() => {
+    console.log('memo');
+    return props.children;
+  }, [1]);
+  console.log('render');
+  const catcher = useMemo(() => new MouseCatcher(), []);
   const [minX, setMinX] = useState(0);
   const [minY, setMinY] = useState(0);
   const initialWidth = props.width;
@@ -64,8 +68,14 @@ export function Canvas(props: {scale?: number, width: number, height: number, ch
   });
   catcher.onMouseUp('canvas', stopScrolling);
 
-  return <CanvasContext.Provider value={{offsetX: minX, offsetY: minY, scale, debug, mouse: catcher}}>
-    <svg
+  const content = useMemo(() =>
+    <CanvasContext.Provider value={{offsetX: 0, offsetY: 0, scale, debug, mouse: catcher}}>
+          <rect x={'-100000%'} y={'-100000%'} width="200000%" height="200000%" fill="#222222" />
+          {children}
+    </CanvasContext.Provider>
+  , [scale, debug]);
+
+  return <svg
     style={{background: 'red'}}
     ref={svgRef}
     version="1.1"
@@ -75,9 +85,6 @@ export function Canvas(props: {scale?: number, width: number, height: number, ch
     cursor="pointer"
     onMouseDown={startScrolling}
     viewBox={`${minX},${minY},${scaledWidth},${scaledHeight}`}
-    >
-      <rect x={minX} y={minY} width="100%" height="100%" fill="#222222" />
-      {props.children}
-    </svg>
-    </CanvasContext.Provider>;
+    >{content}</svg>;
+
 }

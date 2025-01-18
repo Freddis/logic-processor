@@ -1,4 +1,4 @@
-import {CSSProperties, useEffect, useState} from 'react';
+import {CSSProperties, JSX, useEffect, useMemo, useState} from 'react';
 import {Circle} from '../Circle/Circle';
 import {Canvas} from '../Canvas/Canvas';
 import {AndGate} from '../AndGate/AndGate';
@@ -37,6 +37,7 @@ export function LogicConstructor() {
   const scaleDown = () => {
     setScale(scale / 2);
   };
+
   useEffect(() => {
     setIsloading(false);
     setCanvasWidth(() => {
@@ -46,8 +47,24 @@ export function LogicConstructor() {
       return window.innerHeight;
     });
   }, []);
+
+  const elements = useMemo(() => {
+    const result: JSX.Element[] = [];
+    for (let x = 0; x < 10; x++) {
+      for (let y = 0; y < 5; y++) {
+        const child = <AndGate key={'and' + x + '_' + y} id={'and' + x + '_' + y} x={300 + x * 100 } y= {250 + y * 200}/>;
+        result.push(child);
+      }
+    }
+    result.push(<Circle x={250} y={100} id={'circle1'} label="Circle 1" />);
+    result.push(<Circle x={280} y={220} id={'circle2'} label="Circle 2" />);
+    result.push(<AndGate x={10} y={20} id={'andGate'}/>);
+    result.push(<AndGate x={10} y={200} id={'andGate2'}/>);
+    return result;
+  }, [1]);
+
   if (isLoading) {
-    return null;
+    return <div style={{margin: '62.5px auto 0px', width: '1024px', marginTop: 62.5, paddingTop: '10px'}}>Loading...</div>;
   }
   return (
     <div style={containerStyle}>
@@ -60,11 +77,8 @@ export function LogicConstructor() {
         </div>
       </div>
         <Canvas scale={scale} width={canvasWidth} height={canvasheight}>
-          <Circle x={250} y={100} id={'circle1'} label="Circle 1" />
-          <Circle x={280} y={220} id={'circle2'} label="Circle 2" />
-          <AndGate x={10} y={20} id={'andGate'}/>
-          <AndGate x={10} y={200} id={'andGate2'}/>
 
+          {elements}
         </Canvas>
     </div>
   );
