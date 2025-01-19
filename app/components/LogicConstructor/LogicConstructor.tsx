@@ -56,10 +56,10 @@ export function LogicConstructor() {
         result.push(child);
       }
     }
-    result.push(<Circle x={250} y={100} id={'circle1'} label="Circle 1" />);
-    result.push(<Circle x={280} y={220} id={'circle2'} label="Circle 2" />);
-    result.push(<AndGate x={10} y={20} id={'andGate'}/>);
-    result.push(<AndGate x={10} y={200} id={'andGate2'}/>);
+    result.push(<Circle key="circle1" x={250} y={100} id={'circle1'} label="Circle 1" />);
+    result.push(<Circle key="circle2" x={280} y={220} id={'circle2'} label="Circle 2" />);
+    result.push(<AndGate key="and1" x={10} y={20} id={'andGate'}/>);
+    result.push(<AndGate key="and2" x={10} y={200} id={'andGate2'}/>);
     return result;
   }, [1]);
 
@@ -77,7 +77,6 @@ export function LogicConstructor() {
         </div>
       </div>
         <Canvas scale={scale} width={canvasWidth} height={canvasheight}>
-
           {elements}
         </Canvas>
     </div>

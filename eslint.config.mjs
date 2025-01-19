@@ -176,6 +176,9 @@ export default tseslint.config(
   ...x,
   ignores: [
     'build/**',
+    '.vinxi/**',
+    '.output/**',
+    '.output/server/chunks/nitro/nitro.mjs',
   ],
   languageOptions: {
     parser: tsParser,

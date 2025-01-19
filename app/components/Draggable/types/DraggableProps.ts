@@ -7,10 +7,11 @@ export interface DraggableProps {
   width: number,
   height: number,
   id:string,
-  children: JSX.Element[]
+  children: JSX.Element | JSX.Element[]
   isHidden?: boolean
   onClick?: (e: SimpleMouseEvent) => void,
   onFocus?: () => void,
   onFocusOut?: () => void,
   onDrag?: (x: number, y: number) => void,
+  onDragStop?: (x: number, y: number) => void,
 }

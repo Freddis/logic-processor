@@ -34,6 +34,7 @@ export const Draggable: FC<DraggableProps> = (props) => {
   context.mouse.onMouseUp(props.id, (e) => stopDrag(e));
 
   const focus = () => {
+    console.log(`Focus: ${props.id}`);
     setColor(focusColor);
     setCursor('pointer');
     if (props.onFocus) {
@@ -140,10 +141,11 @@ export const Draggable: FC<DraggableProps> = (props) => {
       }
     }
   };
-
+  const children = Array.isArray(props.children) ? props.children : [props.children];
   console.log(props.id, dContext, xOffset, yOffset, dragElementInitialX, dragElementInitialY, props.x, props.y);
   return <DraggableContext.Provider value={{xOffset, yOffset}}>
-      {props.children.filter((x) => x.type.name !== 'Draggable')},
+    <g id={props.id}>
+      {children.filter((x) => x.type.name !== 'Draggable')}
       <rect
       key="key"
       ref={elementRef}
@@ -157,6 +159,7 @@ export const Draggable: FC<DraggableProps> = (props) => {
       opacity={context.debug ? 0.4 : 0}
       width={props.width}
       height={props.height}/>
-      {props.children.filter((x) => x.type.name === 'Draggable')},
+      {children.filter((x) => x.type.name === 'Draggable')}
+    </g>
   </DraggableContext.Provider>;
 };

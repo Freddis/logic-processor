@@ -7,10 +7,8 @@ export function Canvas(props: {scale?: number, width: number, height: number, ch
   const debug = false;
   const scale = props.scale ?? 1;
   const children = useMemo(() => {
-    console.log('memo');
     return props.children;
-  }, [1]);
-  console.log('render');
+  }, []);
   const catcher = useMemo(() => new MouseCatcher(), []);
   const [minX, setMinX] = useState(0);
   const [minY, setMinY] = useState(0);
