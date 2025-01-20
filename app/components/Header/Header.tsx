@@ -16,6 +16,7 @@ export function Header() {
     fontSize: '18px',
     fontFamily: '"IBM Plex Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
     borderBottom: '1px solid rgba(61, 71, 81, 0.3)',
+    zIndex: 1,
   };
   const aStyle: CSSProperties = {
     color: 'white',

@@ -70,6 +70,10 @@ export class MouseCatcher {
     }
   }
 
+  hasLock() {
+    return this.mutex !== null;
+  }
+
   onMouseMove(id: string, listener: MouseCatcherListener) {
     this.listeners.mousemove[id] = listener;
     this.cachedListeners.mousemove = Object.values(this.listeners.mousemove);

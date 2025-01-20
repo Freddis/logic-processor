@@ -12,7 +12,8 @@ export const Draggable: FC<DraggableProps> = (props) => {
   if (props.isHidden) {
     return null;
   }
-  const dContext = useContext(DraggableContext);
+  // const dContext = useContext(DraggableContext);
+  const margin = props.margin ?? 0;
   const context = useContext(CanvasContext);
   const elementColor = 'yellow';
   const focusColor = 'red';
@@ -34,6 +35,9 @@ export const Draggable: FC<DraggableProps> = (props) => {
   context.mouse.onMouseUp(props.id, (e) => stopDrag(e));
 
   const focus = () => {
+    if (context.mouse.hasLock()) {
+      return;
+    }
     console.log(`Focus: ${props.id}`);
     setColor(focusColor);
     setCursor('pointer');
@@ -48,6 +52,9 @@ export const Draggable: FC<DraggableProps> = (props) => {
     unfocus();
   };
   const unfocus = () => {
+    if (context.mouse.hasLock()) {
+      return;
+    }
     setColor(elementColor);
     setCursor('default');
     if (props.onFocusOut) {
@@ -59,12 +66,13 @@ export const Draggable: FC<DraggableProps> = (props) => {
       console.log("Couldn't lock element");
       return;
     }
-    console.log('Start drag');
+    console.log('Start drag', elementRef.current);
     e.preventDefault();
     const htmlCoords = elementRef.current?.getBoundingClientRect();
     if (!htmlCoords) {
       throw new Error('Refernce to element not found');
     }
+
     setDragging(true);
     setMouseOffsetX(e.pageX);
     setMouseOffsetY(e.pageY);
@@ -72,9 +80,13 @@ export const Draggable: FC<DraggableProps> = (props) => {
     // setDraggedElementInitialPageY(htmlCoords.y);
     setDraggedElementInitialX(elementX);
     setDraggedElementInitialY(elementY);
+    if (props.onDragStart) {
+      props.onDragStart(elementX, elementY);
+    }
   };
 
   const startDrag: MouseEventHandler = (e) => {
+    e.stopPropagation();
     processStartDrag(e);
   };
 
@@ -96,6 +108,9 @@ export const Draggable: FC<DraggableProps> = (props) => {
     if (!element) {
       throw new Error('Refernce to element not found');
     }
+    if (props.onDragStop) {
+      props.onDragStop(elementX, elementY);
+    }
     const inHorizontally = e.pageX > element.left && e.pageX < element.right;
     const inVertically = e.pageY > element.top && e.pageY < element.bottom;
     const inside = inHorizontally && inVertically;
@@ -106,9 +121,11 @@ export const Draggable: FC<DraggableProps> = (props) => {
   const processMouseMove = (e: {pageX: number, pageY: number, canvas: SVGSVGElement}) => {
     if (isDragging) {
       const element = elementRef.current?.getBoundingClientRect();
-      const svg = e.canvas.getBoundingClientRect();
+      // const svg = e.canvas.getBoundingClientRect();
+      const svg = true;
       if (!element || !svg) {
-        throw new Error('Refernces to element and canvas not found');
+        console.log(elementRef.current);
+        throw new Error('Refernces to element or canvas not found');
       }
       const scale = context.scale;
       const mouseDeltaX = (e.pageX - mouseOffsetX) / scale;
@@ -142,7 +159,7 @@ export const Draggable: FC<DraggableProps> = (props) => {
     }
   };
   const children = Array.isArray(props.children) ? props.children : [props.children];
-  console.log(props.id, dContext, xOffset, yOffset, dragElementInitialX, dragElementInitialY, props.x, props.y);
+  // console.log(props.id, xOffset, yOffset, dragElementInitialX, dragElementInitialY, props.x, props.y);
   return <DraggableContext.Provider value={{xOffset, yOffset}}>
     <g id={props.id}>
       {children.filter((x) => x.type.name !== 'Draggable')}
@@ -153,12 +170,12 @@ export const Draggable: FC<DraggableProps> = (props) => {
       cursor={cursor}
       onMouseOver={focus}
       onMouseLeave={unfocusHandler}
-      x={props.x}
-      y={props.y}
+      x={props.x - margin}
+      y={props.y - margin}
       fill={color}
       opacity={context.debug ? 0.4 : 0}
-      width={props.width}
-      height={props.height}/>
+      width={props.width + margin * 2}
+      height={props.height + margin * 2}/>
       {children.filter((x) => x.type.name === 'Draggable')}
     </g>
   </DraggableContext.Provider>;

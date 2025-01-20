@@ -1,20 +1,27 @@
 import {createRef, MouseEventHandler, useEffect, useMemo, useState} from 'react';
-import {ReactNode} from '@tanstack/react-router';
 import {MouseCatcher} from '../../utls/MouseCatcher/MouseCatcher';
 import {CanvasContext} from './CanvasContext';
+import {LogicComponent} from '../../model/AndGate';
+// import {AndGate} from '../AndGate/AndGate';
+// import {AndGateProps} from '../AndGate/types/AndGateProps';
+// import {CanvasSquare} from './CanvasSquare';
+// import {CanvasPositionContext} from './CanvasPositionContext';
+import {CanvasSquareCreator} from '../../utls/CanvasSquareGenerator/CanvasSquareGenerator';
 
-export function Canvas(props: {scale?: number, width: number, height: number, children: ReactNode[] | ReactNode}) {
+
+export function Canvas(props: {
+  elements: LogicComponent[],
+  scale?: number,
+  width: number,
+  height: number,
+}) {
   const debug = false;
   const scale = props.scale ?? 1;
-  const children = useMemo(() => {
-    return props.children;
-  }, []);
   const catcher = useMemo(() => new MouseCatcher(), []);
   const [minX, setMinX] = useState(0);
   const [minY, setMinY] = useState(0);
   const initialWidth = props.width;
   const initialHeight = props.height;
-
   const scaledWidth = (initialWidth) / scale;
   const scaledHeight = (initialHeight) / scale;
   const [scrolling, setScrolling] = useState(false);
@@ -22,7 +29,24 @@ export function Canvas(props: {scale?: number, width: number, height: number, ch
   const [scrollInitialY, setScrollInitialY] = useState(0);
   const [scrollMinX, setScrollMinX] = useState(0);
   const [scrollMinY, setScrollMinY] = useState(0);
+  const boundaries = {
+    left: minX,
+    top: minY,
+    right: minX + scaledWidth,
+    bottom: minY + scaledHeight,
+  };
+  const squareCreator = useMemo(() => new CanvasSquareCreator(1, boundaries, props.elements),
+    [props.elements, scale]
+  );
   const svgRef = createRef<SVGSVGElement>();
+  const drawables = useMemo(() => {
+    const squeres = squareCreator.getSqueres();
+    return squeres;
+  }, [
+    scale,
+  ]);
+
+
   useEffect(() => {
     window.addEventListener('mousemove', (e) => {
       if (!svgRef.current) {
@@ -52,6 +76,13 @@ export function Canvas(props: {scale?: number, width: number, height: number, ch
     catcher.unlock('canvas');
     console.log('Stop scrolling');
     setScrolling(false);
+    if (scrollInitialX === minX && scrollInitialY === minY) {
+      console.log('No scrolling happened, skipping ');
+      return;
+    }
+    // setOffset({x: minX, y: minY});
+    squareCreator.viewPortChanged(boundaries);
+
   };
   catcher.onMouseMove('canvas', (e) => {
     if (!scrolling) {
@@ -66,23 +97,31 @@ export function Canvas(props: {scale?: number, width: number, height: number, ch
   });
   catcher.onMouseUp('canvas', stopScrolling);
 
-  const content = useMemo(() =>
+  const content = useMemo(() => {
+    console.log('Redrawing', drawables.length);
+    return (
     <CanvasContext.Provider value={{offsetX: 0, offsetY: 0, scale, debug, mouse: catcher}}>
-          <rect x={'-100000%'} y={'-100000%'} width="200000%" height="200000%" fill="#222222" />
-          {children}
+          <rect key="dasd" x={'-100000%'} y={'-100000%'} width="200000%" height="200000%" fill="#222222" />
+          {drawables}
     </CanvasContext.Provider>
-  , [scale, debug]);
+    );
+  }
+  , [scale, debug, drawables]);
 
-  return <svg
-    style={{background: 'red'}}
-    ref={svgRef}
-    version="1.1"
-    xmlns="http://www.w3.org/2000/svg"
-    width={initialWidth}
-    height={initialHeight}
-    cursor="pointer"
-    onMouseDown={startScrolling}
-    viewBox={`${minX},${minY},${scaledWidth},${scaledHeight}`}
-    >{content}</svg>;
+  return [
+    <div key="div" style={{position: 'relative'}}>
+      <svg
+      style={{background: 'red'}}
+      ref={svgRef}
+      version="1.1"
+      xmlns="http://www.w3.org/2000/svg"
+      width={initialWidth}
+      height={initialHeight}
+      cursor="pointer"
+      onMouseDown={startScrolling}
+      viewBox={`${minX},${minY},${scaledWidth},${scaledHeight}`}
+      >{content}</svg>
+    </div>,
+  ];
 
 }
