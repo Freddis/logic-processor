@@ -5,13 +5,7 @@ import {AndGateProps} from '../../components/AndGate/types/AndGateProps';
 import {CanvasSquare} from '../../components/Canvas/components/CanvasSquare/CanvasSquare';
 import {FocusSquare} from '../../components/Canvas/components/FocusSquare/FocusSquare';
 import {CanvasSquareStateSetter} from '../../components/Canvas/components/CanvasSquare/types/CanvasSquareStateSetter';
-
-export interface RectCoords {
-  left: number,
-  top: number,
-  right: number,
-  bottom: number,
-}
+import {RectCoords} from '../../types/RectCoords';
 
 export class CanvasSquareCreator {
   squareWidth: number;
@@ -171,7 +165,7 @@ export class CanvasSquareCreator {
         };
         // console.log(rowI, colI);
         const element = <CanvasSquare lastUpdate={time} stateSetterConsumer={canvasChange} key={id}
-        {...{...rect, id: id, viewPort, color, isHidden: isHidden}}>{drawables}</CanvasSquare>;
+          {...{...rect, id: id, viewPort, color, isHidden: isHidden}}>{drawables}</CanvasSquare>;
         result.push(element);
       }
     }

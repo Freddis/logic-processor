@@ -2,6 +2,8 @@ import {Outlet, ScrollRestoration} from '@tanstack/react-router';
 import {Meta, Scripts} from '@tanstack/start';
 import {Header} from '../components/Header/Header';
 import {CSSProperties, useEffect} from 'react';
+import {QueryClient, QueryClientProvider} from '@tanstack/react-query';
+const queryClient = new QueryClient();
 
 export function Layout() {
   useEffect(() => {
@@ -12,16 +14,18 @@ export function Layout() {
     color: 'white',
   };
   return (
-      <html>
-        <head>
-          <Meta />
-        </head>
-        <body style={bodyStyle}>
+    <html>
+      <head>
+        <Meta />
+      </head>
+      <body style={bodyStyle}>
+        <QueryClientProvider client={queryClient}>
           <Header/>
           <Outlet />
           <ScrollRestoration />
           <Scripts />
-        </body>
-      </html>
+        </QueryClientProvider>
+      </body>
+    </html>
   );
 }

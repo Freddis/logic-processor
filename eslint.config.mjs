@@ -3,20 +3,21 @@ import eslint from '@eslint/js';
 import tseslint from 'typescript-eslint';
 import globals from 'globals';
 import * as eslintImport from 'eslint-plugin-import';
+import reactPlugin from 'eslint-plugin-react';
 import tsParser from '@typescript-eslint/parser';
 
-// VSCode doesn't support latest eslint and this eslint has a bug with globals
-const fixedGlobals = {};
+// This eslint has a bug with globals, seems like some peer deps load old globals package.
+const fixedBrowserGlobals = {};
 for (const key of Object.keys(globals.browser)) {
-  fixedGlobals[key.trim()] = globals.browser[key];
+  fixedBrowserGlobals[key.trim()] = globals.browser[key];
 }
-
 export default tseslint.config(
   eslint.configs.recommended,
   tseslint.configs.recommended,
   {
     plugins: {
       import: eslintImport,
+      react: reactPlugin,
     },
     rules: {
       'array-bracket-spacing': [2, 'never'],
@@ -160,16 +161,19 @@ export default tseslint.config(
       'wrap-iife': [2, 'inside'],
       'yoda': 2,
       'arrow-parens': [2, 'always'],
-    // Node.js specific
+      // Node.js specific
       'handle-callback-err': [2, '^(err|error)$'],
       'no-mixed-requires': 2,
       'no-new-require': 2,
       'no-path-concat': 2,
-    // Import
+      // Import
       'import/default': 0,
       'import/export': 2,
       'import/imports-first': 2,
       'import/namespace': 2,
+      // React
+      'react/jsx-uses-react': 'error',
+      'react/jsx-indent-props': 'off',
     },
   }
 ).map((x) => ({
@@ -177,17 +181,19 @@ export default tseslint.config(
   ignores: [
     'build/**',
     '.vinxi/**',
+    // the next one doesn't work properly, still checks files and throw errors if they contain eslint rules
     '.output/**',
-    '.output/server/chunks/nitro/nitro.mjs',
   ],
   languageOptions: {
     parser: tsParser,
     parserOptions: {
+      mjs: false,
       jsx: true,
       useJSXTextNode: true,
     },
     globals: {
-      ...fixedGlobals,
+      ...fixedBrowserGlobals,
+      ...globals.node,
     },
   },
 }));

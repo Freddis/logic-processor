@@ -2,10 +2,6 @@ import {createRef, MouseEventHandler, useEffect, useMemo, useState} from 'react'
 import {MouseCatcher} from '../../utls/MouseCatcher/MouseCatcher';
 import {CanvasContext} from './CanvasContext';
 import {LogicComponent} from '../../model/AndGate';
-// import {AndGate} from '../AndGate/AndGate';
-// import {AndGateProps} from '../AndGate/types/AndGateProps';
-// import {CanvasSquare} from './CanvasSquare';
-// import {CanvasPositionContext} from './CanvasPositionContext';
 import {CanvasSquareCreator} from '../../utls/CanvasSquareGenerator/CanvasSquareGenerator';
 
 
@@ -100,10 +96,10 @@ export function Canvas(props: {
   const content = useMemo(() => {
     console.log('Redrawing', drawables.length);
     return (
-    <CanvasContext.Provider value={{offsetX: 0, offsetY: 0, scale, debug, mouse: catcher}}>
-          <rect key="dasd" x={'-100000%'} y={'-100000%'} width="200000%" height="200000%" fill="#222222" />
-          {drawables}
-    </CanvasContext.Provider>
+      <CanvasContext.Provider value={{offsetX: 0, offsetY: 0, scale, debug, mouse: catcher}}>
+        <rect key="dasd" x={'-100000%'} y={'-100000%'} width="200000%" height="200000%" fill="#222222" />
+        {drawables}
+      </CanvasContext.Provider>
     );
   }
   , [scale, debug, drawables]);
@@ -111,15 +107,15 @@ export function Canvas(props: {
   return [
     <div key="div" style={{position: 'relative'}}>
       <svg
-      style={{background: 'red'}}
-      ref={svgRef}
-      version="1.1"
-      xmlns="http://www.w3.org/2000/svg"
-      width={initialWidth}
-      height={initialHeight}
-      cursor="pointer"
-      onMouseDown={startScrolling}
-      viewBox={`${minX},${minY},${scaledWidth},${scaledHeight}`}
+        style={{background: 'red'}}
+        ref={svgRef}
+        version="1.1"
+        xmlns="http://www.w3.org/2000/svg"
+        width={initialWidth}
+        height={initialHeight}
+        cursor="pointer"
+        onMouseDown={startScrolling}
+        viewBox={`${minX},${minY},${scaledWidth},${scaledHeight}`}
       >{content}</svg>
     </div>,
   ];

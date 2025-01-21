@@ -13,6 +13,6 @@ export function NotFoundPage() {
         <h1>404 Page not found</h1>
         <p>This page doesn't exist. If that's a mistake, please let us know and we'll fix it.</p>
       </div>
-   </PageContainer>
+    </PageContainer>
   );
 }

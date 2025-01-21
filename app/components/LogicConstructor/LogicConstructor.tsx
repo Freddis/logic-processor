@@ -92,7 +92,7 @@ export function LogicConstructor() {
     return <div style={{margin: '62.5px auto 0px', width: '1024px', marginTop: 62.5, paddingTop: '10px'}}>
       <div>Loading... This can take some time.</div>
       <div> What you expect? It's designed to create x86 CPUs</div>
-      </div>;
+    </div>;
   }
 
   return (
@@ -105,7 +105,7 @@ export function LogicConstructor() {
           <button onClick={scaleDown}>-</button>
         </div>
       </div>
-    {canvasMemo}
+      {canvasMemo}
     </div>
   );
 }

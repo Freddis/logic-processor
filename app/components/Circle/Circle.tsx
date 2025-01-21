@@ -38,15 +38,15 @@ export function Circle(props: {
   return (
     <g fill="green">
       <Draggable
-      id={props.id}
-      x={x}
-      y={y}
-      width={width}
-      height={width}
-      onDrag={updatePosition}
-    >
-       {circle}
-       {label}
+        id={props.id}
+        x={x}
+        y={y}
+        width={width}
+        height={width}
+        onDrag={updatePosition}
+      >
+        {circle}
+        {label}
       </Draggable>
     </g>
   );

@@ -13,7 +13,7 @@ export function CanvasSquare(props: CanvasSquareProps) {
   });
 
   let content = useMemo<ReactNode[]>(() => {
-    // console.log('memoing', update, isHidden);
+  // console.log('memoing', update, isHidden);
     const arr = Array.isArray(props.children) ? props.children : [props.children];
     return [
       // <rect key={1} x={props.left}
@@ -24,7 +24,7 @@ export function CanvasSquare(props: CanvasSquareProps) {
   }, [isHidden, update, focused]);
   if (isHidden) {
     content = [null];
-    // return null;
+  // return null;
   }
   return <g id={props.id}>{content}</g>;
 }

@@ -1,6 +1,6 @@
 import {ReactNode} from 'react';
-import {RectCoords} from '../../../../../utls/CanvasSquareGenerator/CanvasSquareGenerator';
 import {CanvasSquereStateSetterConsumer} from './CanvasSquereStateSetterConsumer';
+import {RectCoords} from '../../../../../types/RectCoords';
 
 export interface CanvasSquareProps {
   id: string,

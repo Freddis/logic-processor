@@ -164,18 +164,18 @@ export const Draggable: FC<DraggableProps> = (props) => {
     <g id={props.id}>
       {children.filter((x) => x.type.name !== 'Draggable')}
       <rect
-      key="key"
-      ref={elementRef}
-      onMouseDown={startDrag}
-      cursor={cursor}
-      onMouseOver={focus}
-      onMouseLeave={unfocusHandler}
-      x={props.x - margin}
-      y={props.y - margin}
-      fill={color}
-      opacity={context.debug ? 0.4 : 0}
-      width={props.width + margin * 2}
-      height={props.height + margin * 2}/>
+        key="key"
+        ref={elementRef}
+        onMouseDown={startDrag}
+        cursor={cursor}
+        onMouseOver={focus}
+        onMouseLeave={unfocusHandler}
+        x={props.x - margin}
+        y={props.y - margin}
+        fill={color}
+        opacity={context.debug ? 0.4 : 0}
+        width={props.width + margin * 2}
+        height={props.height + margin * 2}/>
       {children.filter((x) => x.type.name === 'Draggable')}
     </g>
   </DraggableContext.Provider>;
