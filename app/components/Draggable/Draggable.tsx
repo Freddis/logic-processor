@@ -20,6 +20,7 @@ export const Draggable: FC<DraggableProps> = (props) => {
   const elementRef = useRef<SVGRectElement>(null);
   const [mouseOffsetX, setMouseOffsetX] = useState(0);
   const [mouseOffsetY, setMouseOffsetY] = useState(0);
+  const [, setFocused] = useState(false);
   // const [dragElementInitialPageX, setDraggedElementInitialPageX] = useState(0);
   // const [dragElementInitialPageY, setDraggedElementInitialPageY] = useState(0);
   const [dragElementInitialX, setDraggedElementInitialX] = useState(0);
@@ -41,8 +42,13 @@ export const Draggable: FC<DraggableProps> = (props) => {
     console.log(`Focus: ${props.id}`);
     setColor(focusColor);
     setCursor('pointer');
+    // setFocused(true);
     if (props.onFocus) {
-      props.onFocus();
+      props.onFocus({
+        isFocused: true,
+        isDragged: isDragging,
+        isActive: false,
+      });
     }
   };
   const unfocusHandler = () => {
@@ -57,8 +63,13 @@ export const Draggable: FC<DraggableProps> = (props) => {
     }
     setColor(elementColor);
     setCursor('default');
+    // setFocused(false);
     if (props.onFocusOut) {
-      props.onFocusOut();
+      props.onFocusOut({
+        isFocused: false,
+        isDragged: isDragging,
+        isActive: false,
+      });
     }
   };
   const processStartDrag = (e: {pageX: number, pageY:number, preventDefault: () => void}) => {

@@ -1,15 +1,16 @@
 import {JSX, ReactNode} from 'react';
-import {LogicComponent} from '../../model/AndGate';
-import {AndGate} from '../../components/AndGate/AndGate';
-import {AndGateProps} from '../../components/AndGate/types/AndGateProps';
+import {LogicComponentDto} from '../../model/AndGate';
 import {CanvasSquare} from '../../components/Canvas/components/CanvasSquare/CanvasSquare';
 import {FocusSquare} from '../../components/Canvas/components/FocusSquare/FocusSquare';
 import {CanvasSquareStateSetter} from '../../components/Canvas/components/CanvasSquare/types/CanvasSquareStateSetter';
 import {RectCoords} from '../../types/RectCoords';
+import {CanvasLogicComponent, CanvasLogicComponentProps} from '../../components/CanvasLogicComponent/CanvasLogicComponent';
+import {SquareLocation} from './types/SquareLocation';
+import {CanvasComponentState} from '../../types/CanvasComponentState';
 
 export class CanvasSquareCreator {
   squareWidth: number;
-  elements: LogicComponent[];
+  elements: LogicComponentDto[];
   squareHeight: number;
   viewPort: RectCoords;
   listnerMatrix: CanvasSquareStateSetter[][] = [];
@@ -21,7 +22,7 @@ export class CanvasSquareCreator {
   // eslint-disable-next-line no-empty-function
   focusSetter: (node: JSX.Element| null) => void = () => {};
 
-  constructor(numberOfSquares: number, viewPort: RectCoords, elements: LogicComponent[]) {
+  constructor(numberOfSquares: number, viewPort: RectCoords, elements: LogicComponentDto[]) {
     const squareWidth = (viewPort.right - viewPort.left) / numberOfSquares;
     const squareHeight = (viewPort.bottom - viewPort.top) / numberOfSquares;
     this.numberOfSquares = numberOfSquares;
@@ -52,7 +53,7 @@ export class CanvasSquareCreator {
     const safeFloor = this.safeFloor;
     const sqWidth = this.squareWidth;
     const sqHeight = this.squareHeight;
-    const matrix: LogicComponent[][][] = [];
+    const matrix: LogicComponentDto[][][] = [];
     const listnerMatrix: CanvasSquareStateSetter[][] = [];
     const squareNumbers: RectCoords = {
       left: safeFloor(globalBoundary.left / sqWidth),
@@ -61,7 +62,7 @@ export class CanvasSquareCreator {
       bottom: safeFloor(globalBoundary.bottom / sqHeight),
     };
     for (let i = squareNumbers.left; i <= squareNumbers.right; i++) {
-      const arr: LogicComponent[][] = [];
+      const arr: LogicComponentDto[][] = [];
       const listeners: ((isHidden: boolean)=>void)[] = [];
       for (let j = squareNumbers.top; j <= squareNumbers.bottom; j++) {
         arr[j] = [];
@@ -178,9 +179,14 @@ export class CanvasSquareCreator {
     result.push(focusSquare);
     return result;
   }
-  protected createElement(el: LogicComponent, rowI: number, colI:number, i: number): JSX.Element {
+  protected createElement(el: LogicComponentDto, rowI: number, colI:number, i: number): JSX.Element {
     let dragged = false;
-    const props: AndGateProps = {
+    const location: SquareLocation = {
+      column: colI,
+      row: rowI,
+      index: i,
+    };
+    const props: CanvasLogicComponentProps = {
       ...el,
       component: el,
       onDrag: () => {
@@ -191,20 +197,20 @@ export class CanvasSquareCreator {
         dragged = false;
         console.log('unlocking drag');
       },
-      onFocus: () => {
+      onFocus: (state) => {
         console.log('Focusing');
-        this.focusChanged(el, rowI, colI, i, true);
+        this.focusChanged(el, location, state);
       },
-      onFocusOut: () => {
+      onFocusOut: (state) => {
         console.log('focus out', dragged);
         if (dragged) {
           console.log('skip focus out', dragged);
           return;
         }
-        this.focusChanged(el, rowI, colI, i, false);
+        this.focusChanged(el, location, state);
       },
     };
-    const element = <AndGate key={el.id} {...props}/>;
+    const element = <CanvasLogicComponent key={el.id} {...props}/>;
     return element;
   }
 
@@ -253,7 +259,11 @@ export class CanvasSquareCreator {
        notified old: ${notifiedCountOld}`, prevListeners, notifiedListeners);
   }
 
-  focusChanged(el: LogicComponent, rowIndex: number, colIndex: number, index: number, isFocused: boolean) {
+  focusChanged(el: LogicComponentDto, location: SquareLocation, state: CanvasComponentState) {
+    const rowIndex = location.row;
+    const colIndex = location.column;
+    const index = location.index;
+    console.log(state);
     const row = this.elementsMatrix[rowIndex];
     if (!row) {
       throw new Error(`Focus row ${rowIndex} not found`);
@@ -268,7 +278,7 @@ export class CanvasSquareCreator {
     if (!node) {
       throw new Error(`Focus node ${colIndex}, ${rowIndex}, ${index} not found`);
     }
-    const focusedThing = isFocused ? node : null;
+    const focusedThing = state.isFocused ? node : null;
     this.focusSetter(focusedThing);
     const updateListener = this.listnerMatrix[rowIndex]![colIndex];
     if (updateListener) {

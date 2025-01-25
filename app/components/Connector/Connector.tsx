@@ -1,6 +1,7 @@
 import {useState, MouseEventHandler, SVGLineElementAttributes} from 'react';
 import {Draggable} from '../Draggable/Draggable';
 import {ConnectorProps} from './types/ConnectorProps';
+import {CanvasFocusEventHandler} from '../Draggable/types/CanvasFocusEventHandler';
 
 export function Connector(props: ConnectorProps) {
   const radius = 7;
@@ -16,17 +17,17 @@ export function Connector(props: ConnectorProps) {
   const height = width;
   const focusColor = 'red';
   const color = focused ? focusColor : props.color;
-  const onFocus = () => {
+  const onFocus: CanvasFocusEventHandler = (state) => {
     setFocused(true);
     if (props.onFocus) {
-      props.onFocus();
+      props.onFocus(state);
     }
   };
 
-  const onFocusOut = () => {
+  const onFocusOut: CanvasFocusEventHandler = (state) => {
     setFocused(false);
     if (props.onFocusOut) {
-      props.onFocusOut();
+      props.onFocusOut(state);
     }
   };
   const noPropagation: MouseEventHandler = (e) => {
@@ -51,8 +52,6 @@ export function Connector(props: ConnectorProps) {
   };
 
   const lineProps: SVGLineElementAttributes<SVGLineElement> = {
-    onMouseOver: onFocus,
-    // onMouseOut: onFocusOut,
     x1: x + radius,
     y1: y + radius,
     x2: target?.x ?? 0,

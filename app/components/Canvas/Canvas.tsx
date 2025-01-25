@@ -1,12 +1,12 @@
 import {createRef, MouseEventHandler, useEffect, useMemo, useState} from 'react';
 import {MouseCatcher} from '../../utls/MouseCatcher/MouseCatcher';
 import {CanvasContext} from './CanvasContext';
-import {LogicComponent} from '../../model/AndGate';
+import {LogicComponentDto} from '../../model/AndGate';
 import {CanvasSquareCreator} from '../../utls/CanvasSquareGenerator/CanvasSquareGenerator';
 
 
 export function Canvas(props: {
-  elements: LogicComponent[],
+  elements: LogicComponentDto[],
   scale?: number,
   width: number,
   height: number,
@@ -14,8 +14,8 @@ export function Canvas(props: {
   const debug = false;
   const scale = props.scale ?? 1;
   const catcher = useMemo(() => new MouseCatcher(), []);
-  const [minX, setMinX] = useState(0);
-  const [minY, setMinY] = useState(0);
+  const [minX, setMinX] = useState(-1 * props.width / 2);
+  const [minY, setMinY] = useState(-1 * props.height / 2);
   const initialWidth = props.width;
   const initialHeight = props.height;
   const scaledWidth = (initialWidth) / scale;

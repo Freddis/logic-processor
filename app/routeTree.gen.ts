@@ -11,20 +11,20 @@
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
-import { Route as ConstructorImport } from './routes/constructor'
 import { Route as IndexImport } from './routes/index'
+import { Route as ConstructorIdImport } from './routes/constructor.$id'
 
 // Create/Update Routes
-
-const ConstructorRoute = ConstructorImport.update({
-  id: '/constructor',
-  path: '/constructor',
-  getParentRoute: () => rootRoute,
-} as any)
 
 const IndexRoute = IndexImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const ConstructorIdRoute = ConstructorIdImport.update({
+  id: '/constructor/$id',
+  path: '/constructor/$id',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -39,11 +39,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexImport
       parentRoute: typeof rootRoute
     }
-    '/constructor': {
-      id: '/constructor'
-      path: '/constructor'
-      fullPath: '/constructor'
-      preLoaderRoute: typeof ConstructorImport
+    '/constructor/$id': {
+      id: '/constructor/$id'
+      path: '/constructor/$id'
+      fullPath: '/constructor/$id'
+      preLoaderRoute: typeof ConstructorIdImport
       parentRoute: typeof rootRoute
     }
   }
@@ -53,37 +53,37 @@ declare module '@tanstack/react-router' {
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/constructor': typeof ConstructorRoute
+  '/constructor/$id': typeof ConstructorIdRoute
 }
 
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/constructor': typeof ConstructorRoute
+  '/constructor/$id': typeof ConstructorIdRoute
 }
 
 export interface FileRoutesById {
   __root__: typeof rootRoute
   '/': typeof IndexRoute
-  '/constructor': typeof ConstructorRoute
+  '/constructor/$id': typeof ConstructorIdRoute
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/constructor'
+  fullPaths: '/' | '/constructor/$id'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/constructor'
-  id: '__root__' | '/' | '/constructor'
+  to: '/' | '/constructor/$id'
+  id: '__root__' | '/' | '/constructor/$id'
   fileRoutesById: FileRoutesById
 }
 
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  ConstructorRoute: typeof ConstructorRoute
+  ConstructorIdRoute: typeof ConstructorIdRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  ConstructorRoute: ConstructorRoute,
+  ConstructorIdRoute: ConstructorIdRoute,
 }
 
 export const routeTree = rootRoute
@@ -97,14 +97,14 @@ export const routeTree = rootRoute
       "filePath": "__root.tsx",
       "children": [
         "/",
-        "/constructor"
+        "/constructor/$id"
       ]
     },
     "/": {
       "filePath": "index.tsx"
     },
-    "/constructor": {
-      "filePath": "constructor.tsx"
+    "/constructor/$id": {
+      "filePath": "constructor.$id.tsx"
     }
   }
 }
