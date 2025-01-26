@@ -182,7 +182,10 @@ export default tseslint.config(
     'build/**',
     '.vinxi/**',
     // the next one doesn't work properly, still checks files and throw errors if they contain eslint rules
-    '.output/**',
+    'output/**',
+    '.drizzle/**',
+    'app/server/drizzle/schema/schema.ts',
+    'app/server/drizzle/schema/relations.ts',
   ],
   languageOptions: {
     parser: tsParser,

@@ -1,3 +1,11 @@
-import {ReactNode} from 'react';
+import {JSX} from 'react';
+import {CanvasComponentState} from '../../../../../types/CanvasComponentState';
 
-export type CanvasSquareStateSetter = (isHidden: boolean, focused: ReactNode | null, x: number)=>void
+export type CanvasSquareStateSetter = (
+  isHidden: boolean,
+  updatedNode: {
+    node: JSX.Element,
+    state: CanvasComponentState
+  } | null,
+  updatedTime: number,
+)=>void

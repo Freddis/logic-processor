@@ -70,6 +70,10 @@ export class MouseCatcher {
     }
   }
 
+  hasSpecificLock(id: string) {
+    return this.mutex === id;
+  }
+
   hasLock() {
     return this.mutex !== null;
   }

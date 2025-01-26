@@ -69,6 +69,9 @@ export function Canvas(props: {
     setScrollMinY(minY);
   };
   const stopScrolling = () => {
+    if (!catcher.hasSpecificLock('canvas')) {
+      return;
+    }
     catcher.unlock('canvas');
     console.log('Stop scrolling');
     setScrolling(false);
@@ -96,7 +99,7 @@ export function Canvas(props: {
   const content = useMemo(() => {
     console.log('Redrawing', drawables.length);
     return (
-      <CanvasContext.Provider value={{offsetX: 0, offsetY: 0, scale, debug, mouse: catcher}}>
+      <CanvasContext.Provider value={{squareCreator, offsetX: 0, offsetY: 0, scale, debug, mouse: catcher}}>
         <rect key="dasd" x={'-100000%'} y={'-100000%'} width="200000%" height="200000%" fill="#222222" />
         {drawables}
       </CanvasContext.Provider>

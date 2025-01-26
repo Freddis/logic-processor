@@ -1,6 +1,5 @@
 import {useState} from 'react';
 import {LogicComponentDto} from '../../model/AndGate';
-import {MouseCatcherListener} from '../../utls/MouseCatcher/types/MouseCatcherListener';
 import {ConnectorProps} from '../Connector/types/ConnectorProps';
 import {Draggable} from '../Draggable/Draggable';
 import {DraggableComponentProps} from '../../types/DraggableComponentProps';
@@ -8,9 +7,14 @@ import {FocusableComponentProps} from '../../types/FocusableComponentProps';
 import {Connector} from '../Connector/Connector';
 import {DraggableProps} from '../Draggable/types/DraggableProps';
 import {CanvasFocusEventHandler} from '../Draggable/types/CanvasFocusEventHandler';
+import {CanvasActivationEventHandler} from '../Draggable/types/CanvasActivationEventHandler';
 
-
-export interface CanvasLogicComponentProps extends DraggableComponentProps, FocusableComponentProps {
+export interface CanvasComponentState {
+  isFocused?: boolean
+  isActive?: boolean
+  isHidden?: boolean
+}
+export interface CanvasLogicComponentProps extends CanvasComponentState, DraggableComponentProps, FocusableComponentProps {
   component: LogicComponentDto
 }
 
@@ -19,8 +23,8 @@ export function CanvasLogicComponent(props:CanvasLogicComponentProps) {
   const [y, setY] = useState(props.component.y);
   const height = 100;
   const width = 60;
-  const [focused, setFocus] = useState(false);
-  const [active, setActive] = useState(false);
+  const [focused, setFocus] = useState(props.isFocused ?? false);
+  const [active, setActive] = useState(props.isActive ?? false);
   const [connectorDragged, setConnectorDragged] = useState(false);
   const backgroundColor = '#333';
   const defaultColor = 'white';
@@ -45,9 +49,9 @@ export function CanvasLogicComponent(props:CanvasLogicComponentProps) {
       props.onFocusOut(state);
     }
   };
-  const activate: MouseCatcherListener = (e) => {
-    e.preventDefault();
-    setActive(!active);
+  const activate: CanvasActivationEventHandler = (e) => {
+    // e.preventDefault();
+    setActive(e.isActive);
   };
   const onDragStop = () => {
     props.component.setPosition(x, y);
@@ -83,13 +87,15 @@ export function CanvasLogicComponent(props:CanvasLogicComponentProps) {
   };
 
   const draggableProps: Omit<DraggableProps, 'children'> = {
+    ...props,
     id: props.component.id,
     margin: 10,
     x,
     y,
     width,
     height,
-    onClick: activate,
+    onActive: activate,
+    onActiveOut: activate,
     onDrag,
     onDragStop,
     onFocus,

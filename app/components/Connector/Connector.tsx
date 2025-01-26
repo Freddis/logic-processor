@@ -51,6 +51,7 @@ export function Connector(props: ConnectorProps) {
     setTarget({x: x - 2, y: y - 2});
   };
 
+  const lineHidden = props.isHidden || target === null;
   const lineProps: SVGLineElementAttributes<SVGLineElement> = {
     x1: x + radius,
     y1: y + radius,
@@ -58,11 +59,11 @@ export function Connector(props: ConnectorProps) {
     y2: target?.y ?? 0,
     stroke: color,
     strokeWidth: 3,
-    opacity: target !== null ? 1 : 0,
+    display: lineHidden ? 'none' : 'initial',
   };
   return [
     <Draggable key={'drag'} {...{id, x, y, width, height, onDrag, onDragStart, onFocus, onDragStop, onFocusOut}}>
-      <line visibility={props.isHidden ? 'none' : 'visible'} {...lineProps}/>
+      <line {...lineProps}/>
       <circle onMouseDown={noPropagation} cursor={'pointer'} cx={x + radius} cy={y + radius} r={radius} fill={color}/>
     </Draggable>,
   ];

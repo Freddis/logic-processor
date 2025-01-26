@@ -1,12 +1,10 @@
-import {JSX, ReactNode} from 'react';
+import {JSX} from 'react';
 import {LogicComponentDto} from '../../model/AndGate';
 import {CanvasSquare} from '../../components/Canvas/components/CanvasSquare/CanvasSquare';
 import {FocusSquare} from '../../components/Canvas/components/FocusSquare/FocusSquare';
 import {CanvasSquareStateSetter} from '../../components/Canvas/components/CanvasSquare/types/CanvasSquareStateSetter';
 import {RectCoords} from '../../types/RectCoords';
-import {CanvasLogicComponent, CanvasLogicComponentProps} from '../../components/CanvasLogicComponent/CanvasLogicComponent';
-import {SquareLocation} from './types/SquareLocation';
-import {CanvasComponentState} from '../../types/CanvasComponentState';
+import {CanvasSquareProps} from '../../components/Canvas/components/CanvasSquare/types/CanvasSquareProps';
 
 export class CanvasSquareCreator {
   squareWidth: number;
@@ -132,12 +130,12 @@ export class CanvasSquareCreator {
         }
         const elementMatrixCol: JSX.Element[] = [];
         elementMatrixRow[colI] = elementMatrixCol;
-        const drawables: JSX.Element[] = Array(yEnd - yStart);
-        for (const [i, el] of col.entries()) {
-          const element = this.createElement(el, rowI, colI, i);
-          elementMatrixCol.push(element);
-          drawables[i] = element;
-        }
+        // const drawables: JSX.Element[] = Array(yEnd - yStart);
+        // for (const [i, el] of col.entries()) {
+        //   const element = this.createElement(el, rowI, colI, i);
+        //   elementMatrixCol.push(element);
+        //   drawables[i] = element;
+        // }
         const rect: RectCoords = {
           left: rowI * sqWidth,
           top: colI * sqHeight,
@@ -153,7 +151,7 @@ export class CanvasSquareCreator {
         if (!isHidden) {
           prevListnersCount++;
         }
-        const canvasChange = (setPosition: (isHidden: boolean, focus: ReactNode | null, x: number)=>void) => {
+        const canvasChange = (setPosition: CanvasSquareStateSetter) => {
           const listnerRow = listnerMatrix[rowI];
           if (listnerRow) {
             listnerRow[colI] = setPosition;
@@ -164,9 +162,18 @@ export class CanvasSquareCreator {
             console.log("Couldn't find listener in matrix");
           }
         };
+        const props: CanvasSquareProps = {
+          ...rect,
+          id: id,
+          viewPort,
+          color,
+          isHidden: isHidden,
+          children: col,
+          lastUpdate: time,
+          stateSetterConsumer: canvasChange,
+        };
         // console.log(rowI, colI);
-        const element = <CanvasSquare lastUpdate={time} stateSetterConsumer={canvasChange} key={id}
-          {...{...rect, id: id, viewPort, color, isHidden: isHidden}}>{drawables}</CanvasSquare>;
+        const element = <CanvasSquare key={id}{...props}></CanvasSquare>;
         result.push(element);
       }
     }
@@ -178,40 +185,6 @@ export class CanvasSquareCreator {
     const focusSquare = <FocusSquare key="focus" addChildren={addChildren}/>;
     result.push(focusSquare);
     return result;
-  }
-  protected createElement(el: LogicComponentDto, rowI: number, colI:number, i: number): JSX.Element {
-    let dragged = false;
-    const location: SquareLocation = {
-      column: colI,
-      row: rowI,
-      index: i,
-    };
-    const props: CanvasLogicComponentProps = {
-      ...el,
-      component: el,
-      onDrag: () => {
-        console.log('locking drag', dragged);
-        dragged = true;
-      },
-      onDragStop: () => {
-        dragged = false;
-        console.log('unlocking drag');
-      },
-      onFocus: (state) => {
-        console.log('Focusing');
-        this.focusChanged(el, location, state);
-      },
-      onFocusOut: (state) => {
-        console.log('focus out', dragged);
-        if (dragged) {
-          console.log('skip focus out', dragged);
-          return;
-        }
-        this.focusChanged(el, location, state);
-      },
-    };
-    const element = <CanvasLogicComponent key={el.id} {...props}/>;
-    return element;
   }
 
   viewPortChanged(boundaries: RectCoords) {
@@ -259,32 +232,6 @@ export class CanvasSquareCreator {
        notified old: ${notifiedCountOld}`, prevListeners, notifiedListeners);
   }
 
-  focusChanged(el: LogicComponentDto, location: SquareLocation, state: CanvasComponentState) {
-    const rowIndex = location.row;
-    const colIndex = location.column;
-    const index = location.index;
-    console.log(state);
-    const row = this.elementsMatrix[rowIndex];
-    if (!row) {
-      throw new Error(`Focus row ${rowIndex} not found`);
-    }
-
-    const col = row[colIndex];
-    if (!col) {
-      throw new Error(`Focus column ${colIndex}, ${rowIndex} not found`);
-    }
-
-    const node = col[index];
-    if (!node) {
-      throw new Error(`Focus node ${colIndex}, ${rowIndex}, ${index} not found`);
-    }
-    const focusedThing = state.isFocused ? node : null;
-    this.focusSetter(focusedThing);
-    const updateListener = this.listnerMatrix[rowIndex]![colIndex];
-    if (updateListener) {
-      updateListener(false, focusedThing, new Date().getTime());
-    }
-  }
   protected safeFloor(val: number) {
     return Math.floor(val);
   };

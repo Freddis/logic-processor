@@ -1,6 +1,6 @@
 import {CSSProperties, useEffect, useMemo, useState} from 'react';
 import {Canvas} from '../Canvas/Canvas';
-import {LogicComponent, LogicComponentDto} from '../../model/AndGate';
+import {LogicComponentDto} from '../../model/AndGate';
 import {Route} from '../../routes/constructor.$id';
 import {queryOptions, useQuery} from '@tanstack/react-query';
 
@@ -73,7 +73,7 @@ export function LogicConstructor() {
   }, []);
 
   const elements = useMemo(() => {
-    const result: LogicComponent[] = [];
+    const result: LogicComponentDto[] = [];
     if (!items.data) {
       console.log('here');
       return result;

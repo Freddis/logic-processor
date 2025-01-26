@@ -1,6 +1,6 @@
-import {ReactNode} from 'react';
 import {CanvasSquereStateSetterConsumer} from './CanvasSquereStateSetterConsumer';
 import {RectCoords} from '../../../../../types/RectCoords';
+import {LogicComponentDto} from '../../../../../model/AndGate';
 
 export interface CanvasSquareProps {
   id: string,
@@ -10,7 +10,7 @@ export interface CanvasSquareProps {
   bottom: number,
   color?: string
   isHidden: boolean,
-  children: ReactNode| ReactNode[],
+  children: LogicComponentDto[],
   lastUpdate: number,
   viewPort: RectCoords,
   stateSetterConsumer: CanvasSquereStateSetterConsumer,

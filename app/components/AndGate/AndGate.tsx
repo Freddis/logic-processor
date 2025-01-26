@@ -73,7 +73,7 @@ export function AndGate(props: AndGateProps) {
     },
   };
   return [
-    <Draggable key={1} {...{id, margin: 10, x, y, width, height, onClick: activate, onDrag, onDragStop, onFocus, onFocusOut}}>
+    <Draggable key={1} {...{id, margin: 10, x, y, width, height, onActive: activate, onDrag, onDragStop, onFocus, onFocusOut}}>
       <rect {...{x, y, width, height, rx: 10, ry: 10, fill: backgroundColor, strokeWidth: 4, stroke: outlineColor}} />
       <text {...{x: textX, y: textY, fontFamily: 'arial', dominantBaseline: 'middle', fill: outlineColor, textAnchor: 'middle'}}>
         <>AND</>

@@ -20,7 +20,8 @@ export const Draggable: FC<DraggableProps> = (props) => {
   const elementRef = useRef<SVGRectElement>(null);
   const [mouseOffsetX, setMouseOffsetX] = useState(0);
   const [mouseOffsetY, setMouseOffsetY] = useState(0);
-  const [, setFocused] = useState(false);
+  const [isFocused, setFocused] = useState(false);
+  const [isActive, setActive] = useState(props.isActive ?? false);
   // const [dragElementInitialPageX, setDraggedElementInitialPageX] = useState(0);
   // const [dragElementInitialPageY, setDraggedElementInitialPageY] = useState(0);
   const [dragElementInitialX, setDraggedElementInitialX] = useState(0);
@@ -35,23 +36,23 @@ export const Draggable: FC<DraggableProps> = (props) => {
   context.mouse.onMouseMove(props.id, (e) => processMouseMove(e));
   context.mouse.onMouseUp(props.id, (e) => stopDrag(e));
 
-  const focus = () => {
+  const focus: MouseEventHandler<SVGRectElement> = () => {
     if (context.mouse.hasLock()) {
       return;
     }
     console.log(`Focus: ${props.id}`);
     setColor(focusColor);
     setCursor('pointer');
-    // setFocused(true);
+    setFocused(true);
     if (props.onFocus) {
       props.onFocus({
         isFocused: true,
         isDragged: isDragging,
-        isActive: false,
+        isActive: isActive,
       });
     }
   };
-  const unfocusHandler = () => {
+  const unfocusHandler:MouseEventHandler<SVGRectElement> = () => {
     if (isDragging) {
       return;
     }
@@ -63,12 +64,12 @@ export const Draggable: FC<DraggableProps> = (props) => {
     }
     setColor(elementColor);
     setCursor('default');
-    // setFocused(false);
+    setFocused(false);
     if (props.onFocusOut) {
       props.onFocusOut({
         isFocused: false,
         isDragged: isDragging,
-        isActive: false,
+        isActive: isActive,
       });
     }
   };
@@ -105,11 +106,16 @@ export const Draggable: FC<DraggableProps> = (props) => {
     if (!isDragging) {
       return;
     }
-    if (props.onClick) {
+    if (props.onActive) {
       const mouseDeltaX = e.pageX - mouseOffsetX;
       const mouseDeltaY = e.pageY - mouseOffsetY;
       if (mouseDeltaX === 0 && mouseDeltaY === 0) {
-        props.onClick(e);
+        setActive(!isActive);
+        props.onActive({
+          isFocused: isFocused,
+          isDragged: isDragging,
+          isActive: !isActive,
+        });
       }
     }
     console.log('Stop drag');

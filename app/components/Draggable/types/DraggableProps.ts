@@ -1,6 +1,6 @@
 import {JSX} from 'react';
-import {SimpleMouseEvent} from '../../../utls/MouseCatcher/types/SimpleMouseEvent';
 import {CanvasFocusEventHandler} from './CanvasFocusEventHandler';
+import {CanvasActivationEventHandler} from './CanvasActivationEventHandler';
 
 export interface DraggableProps {
   x: number,
@@ -10,8 +10,10 @@ export interface DraggableProps {
   id:string,
   children: JSX.Element | JSX.Element[]
   isHidden?: boolean
+  isActive?: boolean
   margin?: number
-  onClick?: (e: SimpleMouseEvent) => void,
+  onActive?: CanvasActivationEventHandler
+  onActiveOut?: CanvasActivationEventHandler
   onFocus?: CanvasFocusEventHandler,
   onFocusOut?: CanvasFocusEventHandler,
   onDrag?: (x: number, y: number) => void,

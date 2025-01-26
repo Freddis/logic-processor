@@ -9,5 +9,5 @@ export function FocusSquare(
   props.addChildren((node: JSX.Element| null) => {
     setChildren(node);
   });
-  return children;
+  return <g>{children}</g>;
 }
