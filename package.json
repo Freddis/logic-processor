@@ -8,6 +8,9 @@
     "build": "vinxi build",
     "start": "vinxi start",
     "start:dev": "vinxi dev",
+    "db:pull": "drizzle-kit pull",
+    "db:generate": "drizzle-kit generate",
+    "db:up": "drizzle-kit migrate",
     "lint": "eslint . --fix --ignore-pattern '.output/**'"
   },
   "author": "Alex Sarychev",

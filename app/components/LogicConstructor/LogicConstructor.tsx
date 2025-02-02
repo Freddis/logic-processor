@@ -1,10 +1,18 @@
-import {CSSProperties, useEffect, useMemo, useState} from 'react';
-import {Canvas} from '../Canvas/Canvas';
-import {LogicComponentDto} from '../../model/AndGate';
+import {CSSProperties, ReactElement, useEffect, useMemo, useState} from 'react';
 import {Route} from '../../routes/constructor.$id';
 import {queryOptions, useQuery} from '@tanstack/react-query';
+import {Canvas} from '../Canvas/Canvas';
+import {LogicComponent} from '../LogicComponent/LogicComponent';
+import {CanvasElementProps} from '../Canvas/types/CanvasElementProps';
+import {LeftMenu} from './LeftMenu';
+import {Connector} from '../Connector/Connector';
+import {ConnectorDto} from '../../model/ConnectorDto';
+import {LogicComponentDto} from '../../model/LogicComponentDto';
+import {CanvasSpace} from '../Canvas/components/CanvasSpace/CanvasSpace';
+import {PointTargetDto} from '../../model/PointTargetDto';
+import {ProjectResponse} from '../../routes/api/types/ProjectResponse';
+import {ConnectorProps} from '../Connector/types/ConnectorProps';
 
-import {ProjectResponse} from '../../routes/api/project.$id';
 export const componentsQueryOptions = (id: string) =>
   queryOptions({
     queryKey: ['project', id],
@@ -17,14 +25,12 @@ export const componentsQueryOptions = (id: string) =>
     },
   });
 
-
 export function LogicConstructor() {
   const {id} = Route.useParams();
   const items = useQuery(componentsQueryOptions(id));
-
+  const menuWidth = 200;
   const [scale, setScale] = useState(1);
-  const [canvasWidth, setCanvasWidth] = useState(500);
-  const [canvasheight, setCanvasheight] = useState(400);
+  const [canvasSize, setCanvasSize] = useState({x: 500, y: 400});
   const [isLoading, setIsloading] = useState(true);
   const [isReLoading, setIsReloading] = useState(false);
   const [reloadCounter, setReloadCounter] = useState(1);
@@ -35,59 +41,50 @@ export function LogicConstructor() {
     alignItems: 'center',
     justifyContent: 'center',
   };
-  const menuWidth = 200;
-  const menuStyle: CSSProperties = {
-    width: menuWidth,
-    justifyItems: 'top',
-    display: 'flex',
-    flexDirection: 'column',
-    padding: '62.5px 20px 0px 20px',
-    boxSizing: 'border-box',
-    height: '100vh',
-  };
-  const scaleStyle: CSSProperties = {
-    display: 'flex',
-    justifyContent: 'left',
-    flexDirection: 'row',
-    marginTop: 20,
-  };
-  const scaleStep = 1.5;
-  const scaleUp = () => {
-    setIsReloading(true);
-    setScale(scale * scaleStep);
-  };
-  const scaleDown = () => {
-    setIsReloading(true);
-    setScale(scale / scaleStep);
-  };
 
   useEffect(() => {
     setIsloading(false);
     setReloadCounter(reloadCounter + 1);
-    setCanvasWidth(() => {
-      return window.innerWidth - menuWidth;
-    });
-    setCanvasheight(() => {
-      return window.innerHeight;
-    });
+    const canvasSizeUpdater = () => {
+      setCanvasSize({x: window.innerWidth - menuWidth, y: window.innerHeight});
+    };
+    canvasSizeUpdater();
+    window.addEventListener('resize', canvasSizeUpdater);
+    document.addEventListener('fullscreenchange', canvasSizeUpdater);
+    return () => {
+      window.removeEventListener('resize', canvasSizeUpdater);
+      document.removeEventListener('fullscreenchange', canvasSizeUpdater);
+    };
   }, []);
 
   const elements = useMemo(() => {
-    const result: LogicComponentDto[] = [];
+    const result: {
+      components: LogicComponentDto[],
+      connections: ConnectorDto[],
+    } = {
+      components: [],
+      connections: [],
+    };
     if (!items.data) {
-      console.log('here');
       return result;
     }
-
     for (const item of items.data.data.project.components) {
       const type = items.data.data.project.componentTypes.find((x) => x.id === item.type);
       if (!type) {
         throw new Error(`Component type '${item.type}' not found`);
       }
-      const gate = new LogicComponentDto('and' + item.x + '_' + item.y, type.label, item.x, item.y, type.joints);
-      result.push(gate);
+      const id = type.label.toLowerCase() + '_' + item.x + '_' + item.y;
+      const gate = new LogicComponentDto(id, type.label, item.x, item.y, type.joints);
+      result.components.push(gate);
     }
-    console.log(result);
+
+    for (const item of items.data.data.project.connections) {
+      const input = new PointTargetDto({x: item.inputX, y: item.inputY});
+      const output = new PointTargetDto({x: item.outputX, y: item.outputY});
+      const connection = new ConnectorDto(item.id, input, output);
+      result.connections.push(connection);
+    }
+
     // const maxHorizontal = 100;
     // const maxVertical = 100;
     // const hSpacing = 130;
@@ -100,21 +97,13 @@ export function LogicConstructor() {
     //   for (let y = 0; y < maxVertical; y++) {
     //     const elX = startX + x * hSpacing;
     //     const elY = startY + y * vSpacing;
-    //     // console.log(elX, elY);
-    //     const gate = new EndGateDto('and' + x + '_' + y, elX, elY);
-    //     result.push(gate);
+    //     const gate = new LogicComponentDto('nand' + x + '_' + y, 'NAND', elX, elY, []);
+    //     result.components.push(gate);
     //   }
     // }
     return result;
   }, [items.isLoading]);
 
-  const canvasMemo = useMemo(
-    () => {
-      console.log('Memoing canvas', reloadCounter);
-      return <Canvas elements={elements} scale={scale} width={canvasWidth} height={canvasheight} />;
-    },
-    [reloadCounter, items.isLoading]
-  );
   if (isLoading || isReLoading || items.isLoading) {
     if (isReLoading) {
       setTimeout(() => {
@@ -128,17 +117,25 @@ export function LogicConstructor() {
     </div>;
   }
 
+  const canvasElements: ReactElement<CanvasElementProps>[] = [
+    ...elements.components.map((x) => <LogicComponent key={x.id} id={x.id} x={x.x} y={x.y} component={x} />),
+    ...elements.connections.map((x) => {
+      const props: ConnectorProps = {
+        id: x.id.toString(),
+        x: x.start.getPosition().x,
+        y: x.start.getPosition().y,
+        connector: x,
+      };
+      return <Connector key={x.id} {...props} />;
+    }),
+  ];
+
   return (
-    <div style={containerStyle}>
-      <div style={menuStyle}>
-        <div style={scaleStyle}>
-          <b style={{marginRight: 10}}>Scale:</b>
-          <button onClick={scaleUp}>+</button>
-          <span style={{margin: '0px 5px'}}>{(scale * 100).toFixed(0)}%</span>
-          <button onClick={scaleDown}>-</button>
-        </div>
+    <CanvasSpace debug={false} scale={scale} width={canvasSize.x} height={canvasSize.y} >
+      <div style={containerStyle}>
+        <LeftMenu width={200} setScale={setScale} />
+        <Canvas >{canvasElements}</Canvas>
       </div>
-      {canvasMemo}
-    </div>
+    </CanvasSpace>
   );
 }

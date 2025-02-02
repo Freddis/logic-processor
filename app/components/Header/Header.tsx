@@ -25,6 +25,6 @@ export function Header() {
   };
   return <div style={style}>
     <Link to="/" style={aStyle}>Home</Link>
-    <Link to="/constructor" style={aStyle}>Playground</Link>
+    <Link to="/constructor/$id" params={{id: '1'}} style={aStyle}>Playground</Link>
   </div>;
 }

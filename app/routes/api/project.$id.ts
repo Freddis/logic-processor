@@ -2,48 +2,32 @@ import {json} from '@tanstack/start';
 import {createAPIFileRoute} from '@tanstack/start/api';
 import {db} from '../../server/drizzle/db';
 import {z} from 'vinxi';
+import {ProjectResponse} from './types/ProjectResponse';
+import {Logger} from '../../utls/Logger/Logger';
 
-export interface ProjectResponse {
-  data: {
-    project: {
-      id: number,
-      name: string,
-      description: string | null,
-      componentTypes: {
-        id: number,
-        label: string,
-        joints: {
-          label: string,
-          type: 'input' | 'output'
-        }[]
-      }[]
-      components: {
-        type: number,
-        x: number,
-        y: number,
-      }[]
-    }
-  }
-}
 export const APIRoute = createAPIFileRoute('/api/project/$id')({
   GET: async (req) => {
+    const logger = new Logger('API');
     const id = z.number().parse(Number(req.params.id));
-    console.log(`Getting project: ${id} `);
-    const project = await db.query.projectsInMain.findFirst({
+    logger.info(`Getting project: ${id} `);
+    const project = await db.query.projects.findFirst({
       where: (table, {eq}) => eq(table.id, id),
     });
     if (!project) {
       throw new Error('Project not found');
     }
-    const components = await db.query.componentsInMain.findMany({
-      where: (table, {eq}) => eq(table.projectid, id),
+    const components = await db.query.components.findMany({
+      where: (table, {eq}) => eq(table.projectId, id),
       with: {
-        projectsInMain_componentid: {
+        referencedProject: {
           with: {
-            projectJointsInMains: true,
+            joints: true,
           },
         },
       },
+    });
+    const connections = await db.query.connections.findMany({
+      where: (table, {eq}) => eq(table.projectId, id),
     });
     const response: ProjectResponse = {
       data: {
@@ -54,7 +38,8 @@ export const APIRoute = createAPIFileRoute('/api/project/$id')({
           componentTypes: components.map((x) => ({
             id: x.componentid!,
             label: x.label,
-            joints: x.projectsInMain_componentid?.projectJointsInMains.map((x) => ({
+            joints: x.referencedProject?.joints.map((x) => ({
+              id: x.id,
               label: x.label,
               type: z.enum(['input', 'output']).parse(x.type),
             })) ?? [],
@@ -65,10 +50,25 @@ export const APIRoute = createAPIFileRoute('/api/project/$id')({
             x: x.x,
             y: x.y,
           })),
+          connections: connections.map((x) => ({
+            id: x.id,
+            inputX: x.inputX,
+            inputY: x.inputY,
+            inputComponentId: x.inputComponentId,
+            inputJointId: x.inputJointId,
+            inputConnectorId: x.inputConnectorId,
+            inputConnectorPosition: x.inpuitConnectorPosition,
+            outputX: x.outputX,
+            outputY: x.outputY,
+            outputComponentId: x.outputComponentId,
+            outputJointId: x.outputJointId,
+            outputConnectorId: x.outputConnectorId,
+            outputConnectorPosition: x.outputConnectorPosition,
+          })),
         },
       },
     };
-    console.log(response);
+    logger.debug('Response', response);
     return json(response);
   },
 });

@@ -1,0 +1,19 @@
+{
+  "name": "react-svg-canvas",
+  "version": "1.0.0",
+  "description": "",
+  "type": "module",
+  "main": "main.ts",
+  "scripts": {
+  },
+  "exports": {
+    "types" : "./types"
+  },
+  "author": "Alex Sarychev",
+  "license": "ISC",
+  "dependencies": {
+  },
+  "devDependencies": {
+
+  }
+}

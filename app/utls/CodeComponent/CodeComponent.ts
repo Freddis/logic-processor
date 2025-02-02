@@ -1,15 +1,16 @@
-import {Connector, LogicComponent} from '../../model/AndGate';
+import {JointDto} from '../../model/JointDto';
+import {LogicComponentDto} from '../../model/LogicComponentDto';
 
 export interface CodeComponent {
-  inputs: Connector[]
-  outputs: Connector[]
-  hasLogicOne: (output: Connector) => boolean
+  inputs: JointDto[]
+  outputs: JointDto[]
+  hasLogicOne: (output: JointDto) => boolean
 }
 
-export function createAnd(component: LogicComponent): CodeComponent {
-  const input1 = new Connector(component, 'a');
-  const input2 = new Connector(component, 'b');
-  const output = new Connector(component, 'out');
+export function createAnd(component: LogicComponentDto): CodeComponent {
+  const input1 = new JointDto(component, 'a');
+  const input2 = new JointDto(component, 'b');
+  const output = new JointDto(component, 'out');
   const result: CodeComponent = {
     inputs: [input1, input2],
     outputs: [output],
@@ -23,9 +24,9 @@ export function createAnd(component: LogicComponent): CodeComponent {
   return result;
 }
 
-export function createNot(component: LogicComponent): CodeComponent {
-  const input = new Connector(component, 'in');
-  const output = new Connector(component, 'out');
+export function createNot(component: LogicComponentDto): CodeComponent {
+  const input = new JointDto(component, 'in');
+  const output = new JointDto(component, 'out');
   const result: CodeComponent = {
     inputs: [input],
     outputs: [output],
@@ -36,8 +37,8 @@ export function createNot(component: LogicComponent): CodeComponent {
   return result;
 }
 
-export function createLogicOne(component: LogicComponent): CodeComponent {
-  const output = new Connector(component, 'out');
+export function createLogicOne(component: LogicComponentDto): CodeComponent {
+  const output = new JointDto(component, 'out');
   const result: CodeComponent = {
     inputs: [],
     outputs: [output],
@@ -48,8 +49,8 @@ export function createLogicOne(component: LogicComponent): CodeComponent {
   return result;
 }
 
-export function createLogicZero(component: LogicComponent): CodeComponent {
-  const output = new Connector(component, 'out');
+export function createLogicZero(component: LogicComponentDto): CodeComponent {
+  const output = new JointDto(component, 'out');
   const result: CodeComponent = {
     inputs: [],
     outputs: [output],

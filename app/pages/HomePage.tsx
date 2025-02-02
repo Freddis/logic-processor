@@ -1,6 +1,6 @@
 import {PageContainer} from '../components/PageContainer/PageContainer';
 import {queryOptions, useQuery} from '@tanstack/react-query';
-import {Project} from '../model/Project';
+import {Project} from '../server/model/Project';
 import {Link} from '@tanstack/react-router';
 
 export const componentsQueryOptions = () =>

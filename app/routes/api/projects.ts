@@ -5,7 +5,7 @@ import {db} from '../../server/drizzle/db';
 export const APIRoute = createAPIFileRoute('/api/projects')({
   GET: async () => {
     console.log('Getting components ');
-    const values = await db.query.projectsInMain.findMany();
+    const values = await db.query.projects.findMany();
     const response = {items: values};
     console.log(response);
     return json(response);

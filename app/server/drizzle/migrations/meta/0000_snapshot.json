@@ -1,0 +1,476 @@
+{
+  "id": "e7171cd0-0cf2-4f4e-9cc8-69ca20238be1",
+  "prevId": "00000000-0000-0000-0000-000000000000",
+  "version": "7",
+  "dialect": "postgresql",
+  "tables": {
+    "logic_constructor.components": {
+      "name": "components",
+      "schema": "logic_constructor",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true,
+          "identity": {
+            "type": "always",
+            "name": "components_id_seq",
+            "schema": "logic_constructor",
+            "increment": "1",
+            "startWith": "1",
+            "minValue": "1",
+            "maxValue": "2147483647",
+            "cache": "1",
+            "cycle": false
+          }
+        },
+        "label": {
+          "name": "label",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "x": {
+          "name": "x",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "y": {
+          "name": "y",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "createdAt": {
+          "name": "createdAt",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "updatedAt": {
+          "name": "updatedAt",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "deletedAt": {
+          "name": "deletedAt",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "projectId": {
+          "name": "projectId",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "componentid": {
+          "name": "componentid",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "components_projectId_projects_id_fk": {
+          "name": "components_projectId_projects_id_fk",
+          "tableFrom": "components",
+          "tableTo": "projects",
+          "schemaTo": "logic_constructor",
+          "columnsFrom": [
+            "projectId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "components_componentid_projects_id_fk": {
+          "name": "components_componentid_projects_id_fk",
+          "tableFrom": "components",
+          "tableTo": "projects",
+          "schemaTo": "logic_constructor",
+          "columnsFrom": [
+            "componentid"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "logic_constructor.connections": {
+      "name": "connections",
+      "schema": "logic_constructor",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true,
+          "identity": {
+            "type": "always",
+            "name": "connections_id_seq",
+            "schema": "logic_constructor",
+            "increment": "1",
+            "startWith": "1",
+            "minValue": "1",
+            "maxValue": "2147483647",
+            "cache": "1",
+            "cycle": false
+          }
+        },
+        "projectId": {
+          "name": "projectId",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "createdat": {
+          "name": "createdat",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "updatedat": {
+          "name": "updatedat",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "deletedat": {
+          "name": "deletedat",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "inputX": {
+          "name": "inputX",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "inputY": {
+          "name": "inputY",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "inputJointId": {
+          "name": "inputJointId",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "inputComponentId": {
+          "name": "inputComponentId",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "inputConnectorId": {
+          "name": "inputConnectorId",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "inpuitConnectorPosition": {
+          "name": "inpuitConnectorPosition",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "outputX": {
+          "name": "outputX",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "outputY": {
+          "name": "outputY",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "outputJointId": {
+          "name": "outputJointId",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "outputComponentId": {
+          "name": "outputComponentId",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "outputConnectorId": {
+          "name": "outputConnectorId",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "outputConnectorPosition": {
+          "name": "outputConnectorPosition",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "connections_projectId_projects_id_fk": {
+          "name": "connections_projectId_projects_id_fk",
+          "tableFrom": "connections",
+          "tableTo": "projects",
+          "schemaTo": "logic_constructor",
+          "columnsFrom": [
+            "projectId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "connections_outputComponentId_components_id_fk": {
+          "name": "connections_outputComponentId_components_id_fk",
+          "tableFrom": "connections",
+          "tableTo": "components",
+          "schemaTo": "logic_constructor",
+          "columnsFrom": [
+            "outputComponentId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "connections_inputConnectorId_connections_id_fk": {
+          "name": "connections_inputConnectorId_connections_id_fk",
+          "tableFrom": "connections",
+          "tableTo": "connections",
+          "schemaTo": "logic_constructor",
+          "columnsFrom": [
+            "inputConnectorId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "connections_outputConnectorId_connections_id_fk": {
+          "name": "connections_outputConnectorId_connections_id_fk",
+          "tableFrom": "connections",
+          "tableTo": "connections",
+          "schemaTo": "logic_constructor",
+          "columnsFrom": [
+            "outputConnectorId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "connections_inputComponentId_components_id_fk": {
+          "name": "connections_inputComponentId_components_id_fk",
+          "tableFrom": "connections",
+          "tableTo": "components",
+          "schemaTo": "logic_constructor",
+          "columnsFrom": [
+            "inputComponentId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "connections_inputJointId_project_joints_id_fk": {
+          "name": "connections_inputJointId_project_joints_id_fk",
+          "tableFrom": "connections",
+          "tableTo": "project_joints",
+          "schemaTo": "logic_constructor",
+          "columnsFrom": [
+            "inputJointId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "connections_outputJointId_project_joints_id_fk": {
+          "name": "connections_outputJointId_project_joints_id_fk",
+          "tableFrom": "connections",
+          "tableTo": "project_joints",
+          "schemaTo": "logic_constructor",
+          "columnsFrom": [
+            "outputJointId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "logic_constructor.project_joints": {
+      "name": "project_joints",
+      "schema": "logic_constructor",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true,
+          "identity": {
+            "type": "always",
+            "name": "project_joints_id_seq",
+            "schema": "logic_constructor",
+            "increment": "1",
+            "startWith": "1",
+            "minValue": "1",
+            "maxValue": "2147483647",
+            "cache": "1",
+            "cycle": false
+          }
+        },
+        "projectId": {
+          "name": "projectId",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "type": {
+          "name": "type",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "label": {
+          "name": "label",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "project_joints_projectId_projects_id_fk": {
+          "name": "project_joints_projectId_projects_id_fk",
+          "tableFrom": "project_joints",
+          "tableTo": "projects",
+          "schemaTo": "logic_constructor",
+          "columnsFrom": [
+            "projectId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "logic_constructor.projects": {
+      "name": "projects",
+      "schema": "logic_constructor",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true,
+          "identity": {
+            "type": "always",
+            "name": "projects_id_seq",
+            "schema": "logic_constructor",
+            "increment": "1",
+            "startWith": "1",
+            "minValue": "1",
+            "maxValue": "2147483647",
+            "cache": "1",
+            "cycle": false
+          }
+        },
+        "name": {
+          "name": "name",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "description": {
+          "name": "description",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "createdAt": {
+          "name": "createdAt",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "updatedAt": {
+          "name": "updatedAt",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "deletedAt": {
+          "name": "deletedAt",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    }
+  },
+  "enums": {},
+  "schemas": {
+    "logic_constructor": "logic_constructor"
+  },
+  "sequences": {},
+  "roles": {},
+  "policies": {},
+  "views": {},
+  "_meta": {
+    "columns": {},
+    "schemas": {},
+    "tables": {}
+  }
+}

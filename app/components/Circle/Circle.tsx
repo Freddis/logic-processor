@@ -1,25 +1,19 @@
-import {JSX, useState, useContext} from 'react';
-import {CanvasContext} from '../Canvas/CanvasContext';
-import {Draggable} from '../Draggable/Draggable';
+import {useContext, useState} from 'react';
+import {ElementContext} from '../Canvas/components/ElementContext/ElementContext';
+import {Draggable} from '../Canvas/components/Draggable/Draggable';
 
-function createCircle(
-  x: number,
-  y: number,
-  width: number
-): JSX.Element & {type: 'circle', props: { cx: number, cy: number, r: number}} {
-  return <circle cx={x + width / 2} cy={y + width / 2} r={width / 2}></circle>;
-}
 export function Circle(props: {
   label: string,
   x: number,
   y: number,
   id: string,
 }) {
-  const context = useContext(CanvasContext);
-  const [x, setX] = useState(props.x * context.scale);
-  const [y, setY] = useState(props.y * context.scale);
+  const [x, setX] = useState(props.x);
+  const [y, setY] = useState(props.y);
+  const context = useContext(ElementContext);
+  const color = context.state.isFocused ? 'lightgreen' : 'green';
   const width = 80;
-  const circle = createCircle(x, y, width);
+  const circle = <circle fill={color} cx={x + width / 2} cy={y + width / 2} r={width / 2}></circle>;
   const label = <text
     fontFamily="arial"
     x={x + width / 2}
@@ -36,7 +30,6 @@ export function Circle(props: {
     setY(y);
   };
   return (
-    <g fill="green">
       <Draggable
         id={props.id}
         x={x}
@@ -48,7 +41,6 @@ export function Circle(props: {
         {circle}
         {label}
       </Draggable>
-    </g>
   );
 }
 

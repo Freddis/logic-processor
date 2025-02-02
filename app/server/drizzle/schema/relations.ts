@@ -1,56 +1,64 @@
-import {relations} from 'drizzle-orm/relations';
-import {projectsInMain, projectJointsInMain, componentsInMain, connectionsInMain} from './schema';
+import { relations } from "drizzle-orm/relations";
+import { projects, projectJoints, components, connections } from "./schema";
 
-export const projectJointsInMainRelations = relations(projectJointsInMain, ({one}) => ({
-  projectsInMain: one(projectsInMain, {
-    fields: [projectJointsInMain.projectid],
-    references: [projectsInMain.id],
-  }),
+export const projectJointsRelations = relations(projectJoints, ({one, many}) => ({
+	project: one(projects, {
+		fields: [projectJoints.projectId],
+		references: [projects.id]
+	}),
+	connectionInput: many(connections),
+	connectionOutput: many(connections),
 }));
 
-export const projectsInMainRelations = relations(projectsInMain, ({many}) => ({
-  projectJointsInMains: many(projectJointsInMain),
-  componentsInMains_projectid: many(componentsInMain, {
-    relationName: 'componentsInMain_projectid_projectsInMain_id',
-  }),
-  componentsInMains_componentid: many(componentsInMain, {
-    relationName: 'componentsInMain_componentid_projectsInMain_id',
-  }),
-  connectionsInMains: many(connectionsInMain),
+export const projectsRelations = relations(projects, ({many}) => ({
+	joints: many(projectJoints),
+	components: many(components),
+	references: many(components),
+	connections: many(connections),
 }));
 
-export const componentsInMainRelations = relations(componentsInMain, ({one, many}) => ({
-  projectsInMain_projectid: one(projectsInMain, {
-    fields: [componentsInMain.projectid],
-    references: [projectsInMain.id],
-    relationName: 'componentsInMain_projectid_projectsInMain_id',
-  }),
-  projectsInMain_componentid: one(projectsInMain, {
-    fields: [componentsInMain.componentid],
-    references: [projectsInMain.id],
-    relationName: 'componentsInMain_componentid_projectsInMain_id',
-  }),
-  connectionsInMains_inputid: many(connectionsInMain, {
-    relationName: 'connectionsInMain_inputid_componentsInMain_id',
-  }),
-  connectionsInMains_outputid: many(connectionsInMain, {
-    relationName: 'connectionsInMain_outputid_componentsInMain_id',
-  }),
+export const componentsRelations = relations(components, ({one, many}) => ({
+	project: one(projects, {
+		fields: [components.projectId],
+		references: [projects.id],
+	}),
+	referencedProject: one(projects, {
+		fields: [components.componentid],
+		references: [projects.id],
+	}),
+	connectedInputs: many(connections),
+	connectedOutputs: many(connections),
 }));
 
-export const connectionsInMainRelations = relations(connectionsInMain, ({one}) => ({
-  projectsInMain: one(projectsInMain, {
-    fields: [connectionsInMain.projectid],
-    references: [projectsInMain.id],
-  }),
-  componentsInMain_inputid: one(componentsInMain, {
-    fields: [connectionsInMain.inputid],
-    references: [componentsInMain.id],
-    relationName: 'connectionsInMain_inputid_componentsInMain_id',
-  }),
-  componentsInMain_outputid: one(componentsInMain, {
-    fields: [connectionsInMain.outputid],
-    references: [componentsInMain.id],
-    relationName: 'connectionsInMain_outputid_componentsInMain_id',
-  }),
+export const connectionsRelations = relations(connections, ({one, many}) => ({
+	project: one(projects, {
+		fields: [connections.projectId],
+		references: [projects.id]
+	}),
+	inputComponent: one(components, {
+		fields: [connections.inputComponentId],
+		references: [components.id],
+	}),
+	inputJoint: one(projectJoints, {
+		fields: [connections.inputJointId],
+		references: [projectJoints.id],
+	}),
+	inputConnector: one(connections, {
+		fields: [connections.inputConnectorId],
+		references: [connections.id]
+	}),
+	inputConnectors: many(connections),
+	outputComponent: one(components, {
+		fields: [connections.outputComponentId],
+		references: [components.id],
+	}),
+	outputJoint: one(projectJoints, {
+		fields: [connections.outputJointId],
+		references: [projectJoints.id],
+	}),
+	outputConnector: one(connections, {
+		fields: [connections.outputConnectorId],
+		references: [connections.id],
+	}),
+	outputConnectors: many(connections),
 }));
