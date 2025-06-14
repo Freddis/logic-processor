@@ -7,30 +7,40 @@
   "scripts": {
     "build": "vinxi build",
     "start": "vinxi start",
-    "start:dev": "vinxi dev",
+    "dev": "vinxi dev",
     "db:pull": "drizzle-kit pull",
     "db:generate": "drizzle-kit generate",
-    "db:up": "drizzle-kit migrate",
+    "db:migrate": "drizzle-kit migrate",
     "lint": "eslint . --fix --ignore-pattern '.output/**'"
   },
   "author": "Alex Sarychev",
   "license": "ISC",
   "dependencies": {
-    "@tanstack/react-query": "^5.64.2",
-    "@tanstack/react-router": "^1.95.3",
-    "@tanstack/start": "^1.95.3",
+    "@tanstack/react-query": "5.77.0",
+    "@tanstack/react-router": "1.120.9",
+    "@tanstack/router-generator": "1.120.9",
+    "@tanstack/start-api-routes": "1.120.9",
+    "@tanstack/react-router-devtools": "1.120.9",
+    "@tanstack/react-start": "1.120.9",
+    "@tanstack/react-start-config": "1.120.9",
+    "@tanstack/router-plugin": "1.120.9",
+    "@tanstack/react-start-client": "1.120.9",
+    "@tanstack/react-start-plugin": "1.115.0",
+    "@tanstack/react-start-server": "1.120.9",
+    "@tanstack/start-server-core": "1.120.9",
     "dotenv": "^16.4.7",
     "drizzle-orm": "^0.38.4",
     "eslint-plugin-import": "^2.31.0",
     "pg": "^8.13.1",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "vinxi": "^0.5.1"
+    "vinxi": "0.5.3",
+    "yaml": "^2.8.0",
+    "zod": "^3.24.1",
+    "zod-openapi": "^4.2.4"
   },
   "devDependencies": {
     "@eslint/js": "^9.18.0",
-    "@tanstack/router-devtools": "^1.95.3",
-    "@tanstack/router-plugin": "^1.95.3",
     "@types/pg": "^8.11.10",
     "@types/react": "^19.0.4",
     "@types/react-dom": "^19.0.2",
@@ -39,6 +49,7 @@
     "eslint-plugin-react": "^7.37.4",
     "tsx": "^4.19.2",
     "typescript": "^5.7.3",
-    "typescript-eslint": "^8.19.1"
+    "typescript-eslint": "^8.19.1",
+    "vite-tsconfig-paths": "^5.1.4"
   }
 }

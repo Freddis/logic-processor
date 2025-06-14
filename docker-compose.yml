@@ -1,0 +1,22 @@
+services:
+  db:
+    image: postgres:17-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: gym
+    ports:
+      - 25432:5432
+  app:
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+      args:
+        - NO=value
+      target: base
+    ports:
+      - 3000:3000 
+    environment:
+      - DB_HOST=db
+      - DB_PORT=5432
+    # entrypoint: "sleep 1000000" # debug
