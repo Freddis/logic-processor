@@ -1,4 +1,5 @@
-import {ApiService} from '../ApiService/ApiService';
+import {OpenApi} from 'strap-on-openapi';
 
-const service = new ApiService();
-export const openApi = service.getOpenApiInstance();
+export const openApi = OpenApi.builder.defineGlobalConfig({
+  basePath: '/api/v1',
+}).create();

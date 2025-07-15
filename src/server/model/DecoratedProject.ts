@@ -28,6 +28,6 @@ export const decoratedProjectValidator = projectValidator.pick({
     description: 'List of project connections',
   }),
 
-}).openapi({description: 'Decorated Project', ref: 'Decorated Project'});
+}).openapi({description: 'Decorated Project', ref: 'DecoratedProject'});
 export type DecoratedProjectValidator = typeof decoratedProjectValidator;
 export type DecoratedProject = TypeOf<DecoratedProjectValidator>

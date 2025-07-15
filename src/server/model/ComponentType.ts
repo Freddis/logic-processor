@@ -9,6 +9,9 @@ export const componentTypeValidator = componentValidator.pick({
   joints: componentJointValidator.omit({
     projectId: true,
   }).array().openapi({description: 'List of component joints'}),
+}).openapi({
+  description: 'Type of Component that can be included into projects.',
+  ref: 'ComponentType',
 });
 
 export type ComponentTypeValidator = typeof componentTypeValidator

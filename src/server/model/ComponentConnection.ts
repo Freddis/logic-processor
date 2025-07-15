@@ -1,9 +1,9 @@
 import {TypeOf} from 'zod';
 import {dbSchema} from '../drizzle/db';
 import {createSelectSchema} from 'drizzle-zod';
-import {describe} from '../api/describe';
+import {openApi} from '../api/openApi';
 
-export const connectionValidator = describe(createSelectSchema(dbSchema.connections), {
+export const connectionValidator = openApi.validators.describeShape(createSelectSchema(dbSchema.connections), {
   id: 'Id of the component',
   projectId: 'Id of the project this connection belongs to',
   inputX: 'Input X coordinate in case if input is not connected',
@@ -28,6 +28,6 @@ export const connectionValidator = describe(createSelectSchema(dbSchema.connecti
 }).openapi({
   // eslint-disable-next-line max-len
   description: 'Component Connection. Has input and output which can be connected to: component, another connection or just hang in the "air" unconnected. ',
-  ref: 'Component Connection',
+  ref: 'ComponentConnection',
 });
 export type ComponentConnection = TypeOf<typeof connectionValidator>

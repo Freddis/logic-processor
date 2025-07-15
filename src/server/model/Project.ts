@@ -1,9 +1,9 @@
 import {TypeOf} from 'zod';
 import {dbSchema} from '../drizzle/db';
 import {createSelectSchema} from 'drizzle-zod';
-import {describe} from '../api/describe';
+import {openApi} from '../api/openApi';
 
-export const projectValidator = describe(createSelectSchema(dbSchema.projects), {
+export const projectValidator = openApi.validators.describeShape(createSelectSchema(dbSchema.projects), {
   id: 'Project Id',
   name: 'Name of the Project',
   description: 'Description of the project',

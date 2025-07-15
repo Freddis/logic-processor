@@ -1,6 +1,6 @@
 import {CSSProperties, ReactElement, useEffect, useMemo, useState} from 'react';
 import {Route} from '../../routes/constructor.$id';
-import {queryOptions, useQuery} from '@tanstack/react-query';
+import {useQuery} from '@tanstack/react-query';
 import {Canvas} from '../Canvas/Canvas';
 import {LogicComponent} from '../LogicComponent/LogicComponent';
 import {CanvasElementProps} from '../Canvas/types/CanvasElementProps';
@@ -9,25 +9,17 @@ import {ConnectorDto} from '../../model/ConnectorDto';
 import {LogicComponentDto} from '../../model/LogicComponentDto';
 import {CanvasSpace} from '../Canvas/components/CanvasSpace/CanvasSpace';
 import {PointTargetDto} from '../../model/PointTargetDto';
-import {ProjectResponse} from '../../types/ProjectResponse';
 import {ConnectorProps} from '../Connector/types/ConnectorProps';
 import {LeftMenu} from './LeftMenu/LeftMenu';
-
-export const componentsQueryOptions = (id: string) =>
-  queryOptions({
-    queryKey: ['project', id],
-    queryFn: async () => {
-      const res = await fetch('http://localhost:3000/api/v1/projects/' + id, {
-        method: 'GET',
-      });
-      const json = await res.json();
-      return json as ProjectResponse;
-    },
-  });
+import {getProjectsByIdOptions} from '../../openapi-client/@tanstack/react-query.gen';
 
 export function LogicConstructor() {
   const {id} = Route.useParams();
-  const items = useQuery(componentsQueryOptions(id));
+  const items = useQuery(getProjectsByIdOptions({
+    path: {
+      id: id,
+    },
+  }));
   const menuWidth = 200;
   const [scale, setScale] = useState(1);
   const [canvasSize, setCanvasSize] = useState({x: 500, y: 400});

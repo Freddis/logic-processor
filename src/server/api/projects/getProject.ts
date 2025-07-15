@@ -2,9 +2,8 @@ import {OpenApiMethod, OpenApiSampleRouteType} from 'strap-on-openapi';
 import {openApi} from '../openApi';
 import z from 'zod';
 import {db} from '../../drizzle/db';
-import {ProjectResponse} from '../../../types/ProjectResponse';
 import {Logger} from '../../../utls/Logger/Logger';
-import {decoratedProjectValidator} from '../../model/DecoratedProject';
+import {DecoratedProject, decoratedProjectValidator} from '../../model/DecoratedProject';
 
 export const getProject = openApi.factory.createRoute({
   type: OpenApiSampleRouteType.Public,
@@ -44,46 +43,46 @@ export const getProject = openApi.factory.createRoute({
     const connections = await db.query.connections.findMany({
       where: (table, {eq}) => eq(table.projectId, id),
     });
-    const response: ProjectResponse = {
+    const decoratedProject: DecoratedProject = {
+      id: project.id,
+      name: project.name,
+      description: project.description,
+      componentTypes: components.map((x) => ({
+        id: x.componentid!,
+        label: x.label,
+        joints: x.referencedProject?.joints.map((x) => ({
+          id: x.id,
+          label: x.label,
+          type: z.enum(['input', 'output']).parse(x.type),
+        })) ?? [],
+      })),
+      components: components.map((x) => ({
+        id: x.id,
+        type: x.componentid!,
+        x: x.x,
+        y: x.y,
+      })),
+      connections: connections.map((x) => ({
+        id: x.id,
+        inputX: x.inputX,
+        inputY: x.inputY,
+        inputComponentId: x.inputComponentId,
+        inputJointId: x.inputJointId,
+        inputConnectorId: x.inputConnectorId,
+        inputConnectorPosition: x.inputConnectorPosition,
+        outputX: x.outputX,
+        outputY: x.outputY,
+        outputComponentId: x.outputComponentId,
+        outputJointId: x.outputJointId,
+        outputConnectorId: x.outputConnectorId,
+        outputConnectorPosition: x.outputConnectorPosition,
+      })),
+    };
+
+    return {
       data: {
-        project: {
-          id: project.id,
-          name: project.name,
-          description: project.description,
-          componentTypes: components.map((x) => ({
-            id: x.componentid!,
-            label: x.label,
-            joints: x.referencedProject?.joints.map((x) => ({
-              id: x.id,
-              label: x.label,
-              type: z.enum(['input', 'output']).parse(x.type),
-            })) ?? [],
-          })),
-          components: components.map((x) => ({
-            id: x.id,
-            type: x.componentid!,
-            x: x.x,
-            y: x.y,
-          })),
-          connections: connections.map((x) => ({
-            id: x.id,
-            inputX: x.inputX,
-            inputY: x.inputY,
-            inputComponentId: x.inputComponentId,
-            inputJointId: x.inputJointId,
-            inputConnectorId: x.inputConnectorId,
-            inputConnectorPosition: x.inputConnectorPosition,
-            outputX: x.outputX,
-            outputY: x.outputY,
-            outputComponentId: x.outputComponentId,
-            outputJointId: x.outputJointId,
-            outputConnectorId: x.outputConnectorId,
-            outputConnectorPosition: x.outputConnectorPosition,
-          })),
-        },
+        project: decoratedProject,
       },
     };
-    logger.debug('Response', response);
-    return response;
   },
 });

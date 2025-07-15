@@ -35,7 +35,7 @@
     "pg": "^8.13.1",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "strap-on-openapi": "^1.0.44",
+    "strap-on-openapi": "^1.0.46",
     "vinxi": "0.5.3",
     "yaml": "^2.8.0",
     "zod": "^3.24.1",

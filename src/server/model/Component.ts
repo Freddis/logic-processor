@@ -1,9 +1,10 @@
 import {TypeOf} from 'zod';
 import {dbSchema} from '../drizzle/db';
 import {createSelectSchema} from 'drizzle-zod';
-import {describe} from '../api/describe';
+import {openApi} from '../api/openApi';
 
-export const componentValidator = describe(createSelectSchema(dbSchema.components), {
+
+export const componentValidator = openApi.validators.describeShape(createSelectSchema(dbSchema.components), {
   id: 'Id of the component',
   projectId: 'Id of the parent project',
   componentid: 'Id of the parent component',

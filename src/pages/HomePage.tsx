@@ -1,22 +1,10 @@
 import {PageContainer} from '../components/PageContainer/PageContainer';
-import {queryOptions, useQuery} from '@tanstack/react-query';
-import {Project} from '../server/model/Project';
+import {useQuery} from '@tanstack/react-query';
 import {Link} from '@tanstack/react-router';
-
-export const componentsQueryOptions = () =>
-  queryOptions({
-    queryKey: ['users'],
-    queryFn: async () => {
-      const res = await fetch('http://localhost:3000/api/v1/projects', {
-        method: 'GET',
-      });
-      const json = await res.json();
-      return json as {items: Project[]};
-    },
-  });
+import {getProjectsOptions} from '../openapi-client/@tanstack/react-query.gen';
 
 export function HomePage() {
-  const items = useQuery(componentsQueryOptions());
+  const items = useQuery(getProjectsOptions());
   if (items.isLoading) {
     return (
       <PageContainer>
