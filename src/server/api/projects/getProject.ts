@@ -1,9 +1,9 @@
 import {OpenApiMethod, OpenApiSampleRouteType} from 'strap-on-openapi';
 import {openApi} from '../openApi';
 import z from 'zod';
-import {db} from '../../drizzle/db';
 import {Logger} from '../../../utls/Logger/Logger';
 import {DecoratedProject, decoratedProjectValidator} from '../../model/DecoratedProject';
+import {getDb} from '../../drizzle/db';
 
 export const getProject = openApi.factory.createRoute({
   type: OpenApiSampleRouteType.Public,
@@ -21,6 +21,7 @@ export const getProject = openApi.factory.createRoute({
     }).openapi({description: 'Project response'}),
   },
   handler: async (ctx) => {
+    const db = await getDb();
     const logger = new Logger('API');
     const id = z.number().parse(ctx.params.path.id);
     logger.info(`Getting project: ${id} `);

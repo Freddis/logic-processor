@@ -2,7 +2,7 @@ import {OpenApiMethod, OpenApiSampleRouteType} from 'strap-on-openapi';
 import {openApi} from '../openApi';
 import z from 'zod';
 import {projectValidator} from '../../model/Project';
-import {db} from '../../drizzle/db';
+import {getDb} from '../../drizzle/db';
 
 export const listProjects = openApi.factory.createRoute({
   type: OpenApiSampleRouteType.Public,
@@ -15,7 +15,7 @@ export const listProjects = openApi.factory.createRoute({
     }).openapi({description: 'List of projects'}),
   },
   handler: async () => {
-    console.log('Getting components ');
+    const db = await getDb();
     const values = await db.query.projects.findMany();
     const response = {items: values};
     console.log(response);
