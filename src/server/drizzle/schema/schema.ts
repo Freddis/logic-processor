@@ -52,7 +52,7 @@ export const connections = logicConstructor.table("connections", {
 	inputJointId: integer(),
 	inputComponentId: integer(),
 	inputConnectorId: integer(),
-	inpuitConnectorPosition: integer(),
+	inputConnectorPosition: integer('inpuitConnectorPosition'),
 	outputX: integer().notNull(),
 	outputY: integer().notNull(),
 	outputJointId: integer(),

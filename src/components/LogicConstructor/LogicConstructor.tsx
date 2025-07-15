@@ -17,7 +17,7 @@ export const componentsQueryOptions = (id: string) =>
   queryOptions({
     queryKey: ['project', id],
     queryFn: async () => {
-      const res = await fetch('http://localhost:3000/api/project/' + id, {
+      const res = await fetch('http://localhost:3000/api/v1/projects/' + id, {
         method: 'GET',
       });
       const json = await res.json();

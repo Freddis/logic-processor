@@ -1,14 +1,29 @@
-import {json} from '@tanstack/react-start';
-import {db} from '../../server/drizzle/db';
-import {z} from 'vinxi';
-import {ProjectResponse} from '../../types/ProjectResponse';
-import {Logger} from '../../utls/Logger/Logger';
-import {createAPIFileRoute} from '@tanstack/start-api-routes';
+import {OpenApiMethod, OpenApiSampleRouteType} from 'strap-on-openapi';
+import {openApi} from '../openApi';
+import z from 'zod';
+import {db} from '../../drizzle/db';
+import {ProjectResponse} from '../../../types/ProjectResponse';
+import {Logger} from '../../../utls/Logger/Logger';
+import {decoratedProjectValidator} from '../../model/DecoratedProject';
 
-export const APIRoute = createAPIFileRoute('/api/project/$id')({
-  GET: async (req) => {
+export const getProject = openApi.factory.createRoute({
+  type: OpenApiSampleRouteType.Public,
+  method: OpenApiMethod.GET,
+  path: '/{id}',
+  description: 'Lists logic circuit projects of the user',
+  validators: {
+    path: z.object({
+      id: openApi.validators.strings.number.openapi({description: 'Id of the project'}),
+    }),
+    response: z.object({
+      data: z.object({
+        project: decoratedProjectValidator,
+      }).openapi({description: 'Data envelope'}),
+    }).openapi({description: 'Project response'}),
+  },
+  handler: async (ctx) => {
     const logger = new Logger('API');
-    const id = z.number().parse(Number(req.params.id));
+    const id = z.number().parse(ctx.params.path.id);
     logger.info(`Getting project: ${id} `);
     const project = await db.query.projects.findFirst({
       where: (table, {eq}) => eq(table.id, id),
@@ -57,7 +72,7 @@ export const APIRoute = createAPIFileRoute('/api/project/$id')({
             inputComponentId: x.inputComponentId,
             inputJointId: x.inputJointId,
             inputConnectorId: x.inputConnectorId,
-            inputConnectorPosition: x.inpuitConnectorPosition,
+            inputConnectorPosition: x.inputConnectorPosition,
             outputX: x.outputX,
             outputY: x.outputY,
             outputComponentId: x.outputComponentId,
@@ -69,6 +84,6 @@ export const APIRoute = createAPIFileRoute('/api/project/$id')({
       },
     };
     logger.debug('Response', response);
-    return json(response);
+    return response;
   },
 });

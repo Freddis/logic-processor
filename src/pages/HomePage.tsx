@@ -7,7 +7,7 @@ export const componentsQueryOptions = () =>
   queryOptions({
     queryKey: ['users'],
     queryFn: async () => {
-      const res = await fetch('http://localhost:3000/api/projects', {
+      const res = await fetch('http://localhost:3000/api/v1/projects', {
         method: 'GET',
       });
       const json = await res.json();
